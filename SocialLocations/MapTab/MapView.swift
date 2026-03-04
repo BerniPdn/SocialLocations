@@ -22,6 +22,7 @@ struct MapView: View {
     var body: some View {
         MapReader { proxy in
             Map(position: $position) {
+                
                 ForEach(FixedLocations.all, id: \.name) { location in
                     Annotation(location.name, coordinate: location.coordinate) {
                         Image(location.imageName)
@@ -31,16 +32,21 @@ struct MapView: View {
                 }
                 
                 ForEach(userDroppedPins.indices, id: \.self) { index in
-                    Marker("Pin \(index + 1)", systemImage: "person.fill", coordinate: userDroppedPins[index])
-                        .tint(.red)
+                    Annotation("Pin \(index + 1)", coordinate: userDroppedPins[index]) {
+                        Image("Paul")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    }
                 }
             }
+            .mapStyle(.standard())
             .onTapGesture { screenPoint in
-                if let coordinate = proxy.convert(screenPoint, from: .local) {
-                    userDroppedPins.append(coordinate)
+                    if let coordinate = proxy.convert(screenPoint, from: .local) {
+                        userDroppedPins.append(coordinate)
+                    }
                 }
-            }
-                .mapStyle(.standard())
             }
         }
     }
