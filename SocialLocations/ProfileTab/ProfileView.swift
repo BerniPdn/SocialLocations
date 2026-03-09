@@ -18,7 +18,7 @@ struct ProfileView: View {
                     .foregroundColor(.gray)
                     .padding(.top, 40)
                 
-                Text("Bernarda Perez")
+                Text("Paul Cantrell")
                     .font(.title)
                     .fontWeight(.bold)
                 
