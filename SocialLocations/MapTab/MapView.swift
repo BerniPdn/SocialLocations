@@ -22,6 +22,7 @@ struct MapView: View {
         MapReader { proxy in
             Map(position: $position) {
                 
+                
                 ForEach(FixedLocations.all, id: \.name) { location in
                     Annotation(location.name, coordinate: location.coordinate) {
                         Image(location.imageName)
