@@ -16,15 +16,15 @@ struct MainView: View {
                     Label("Map", systemImage: "map")
                 }
             
-            Text("Here you can see your friends")
-                .tabItem {
-                    Label("Friends", systemImage: "globe")
-                }
+            FriendsView() // Replaces Text("Here you can see your friends")
+                            .tabItem {
+                                Label("Friends", systemImage: "globe")
+                            }
             
-            Text("Here you can see your profile")
-                .tabItem {
-                    Label("Your Profile", systemImage: "person")
-                }
+            ProfileView() // Replaces Text("Here you can see your profile")
+                            .tabItem {
+                                Label("Your Profile", systemImage: "person")
+                            }
         }
     }
 }
