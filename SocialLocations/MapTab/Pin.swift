@@ -47,7 +47,6 @@ class PinsModel: ObservableObject {
             
             if let first = mapItems.first, let mkAddress = first.address {
                 pins[index].address = mkAddress.shortAddress
-                print("Address saved:", mkAddress.shortAddress)
             }
         } catch {
             print("Reverse geocoding failed:", error)

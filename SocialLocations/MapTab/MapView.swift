@@ -9,7 +9,9 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
+    
     @StateObject private var pinsModel = PinsModel()
+    @State private var pendingPin: Pin?
     
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(
@@ -41,17 +43,6 @@ struct MapView: View {
                                 .scaledToFit()
                                 .frame(width: 40, height: 40)
                                 .clipShape(Circle())
-                            
-                            if let address = pin.address {
-                                Text(address)
-                                    .font(.custom("Times New Roman", fixedSize: 10))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(.black)
-                            } else {
-                                Text("Loading…")
-                                    .font(.caption2)
-                                    .foregroundColor(.gray)
-                            }
                         }
                     }
                 }
@@ -63,9 +54,19 @@ struct MapView: View {
             .mapStyle(.standard())
             .onTapGesture { screenPoint in
                 if let coordinate = proxy.convert(screenPoint, from: .local) {
-                    Task {
-                        await pinsModel.savePin(coordinate: coordinate, name: "", comment: "", rating: 0) //I have to find a way so that the user can add this infomation, and then when you press an Pin you can see it
+                    pendingPin =  Pin(coordinate: coordinate, name: "", comment: "", rating: 0)
+                }
+            }
+            .sheet(item: $pendingPin) {pin in
+                PinSheet(coordinate: pin.coordinate) {newPin in
+                    Task{
+                        await pinsModel.savePin(
+                            coordinate: newPin.coordinate,
+                            name: newPin.name,
+                            comment: newPin.comment,
+                            rating: newPin.rating)
                     }
+                    pendingPin = nil
                 }
             }
         }
