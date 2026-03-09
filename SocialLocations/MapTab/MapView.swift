@@ -18,6 +18,8 @@ struct MapView: View {
         )
     )
     
+    @State private var isSheetPresented: Bool = true
+    
     var body: some View {
         MapReader { proxy in
             Map(position: $position) {
@@ -54,6 +56,10 @@ struct MapView: View {
                     }
                 }
             }
+//            .ignoresSafeArea()
+//            .sheet(isPresented: $isSheetPresented) {
+//                SheetView()
+//            }
             .mapStyle(.standard())
             .onTapGesture { screenPoint in
                 if let coordinate = proxy.convert(screenPoint, from: .local) {
