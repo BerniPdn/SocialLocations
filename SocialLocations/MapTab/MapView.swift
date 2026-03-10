@@ -12,6 +12,7 @@ struct MapView: View {
     
     @StateObject private var pinsModel = PinsModel()
     @State private var pendingPin: Pin?
+    @State private var isPinDroppingActive: Bool = false
     
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(
@@ -47,14 +48,29 @@ struct MapView: View {
                     }
                 }
             }
+            //This is the code for my sheet view for searching that isn't working yet
 //            .ignoresSafeArea()
 //            .sheet(isPresented: $isSheetPresented) {
 //                SearchSheet()
 //            }
             .mapStyle(.standard())
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    isPinDroppingActive.toggle()
+                } label: {
+                    Image(systemName: isPinDroppingActive ? "mappin.slash" : "mappin.circle.fill")
+                        .padding()
+                        .foregroundStyle(isPinDroppingActive ? .red: .primary)
+                        .background(.ultraThinMaterial)
+                }
+                .frame(width: 50, height: 100)
+                .padding(.top, 175)
+            }
             .onTapGesture { screenPoint in
+                guard isPinDroppingActive else { return }
                 if let coordinate = proxy.convert(screenPoint, from: .local) {
                     pendingPin =  Pin(coordinate: coordinate, name: "", comment: "", rating: 0)
+                    isPinDroppingActive = false
                 }
             }
             .sheet(item: $pendingPin) {pin in
