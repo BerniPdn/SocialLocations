@@ -13,6 +13,8 @@ struct MapView: View {
     @StateObject private var pinsModel = PinsModel()
     @State private var pendingPin: Pin?
     @State private var isPinDroppingActive: Bool = false
+    @State private var isSearchActive: Bool = false
+    
     
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(
@@ -65,6 +67,15 @@ struct MapView: View {
                 }
                 .frame(width: 50, height: 100)
                 .padding(.top, 175)
+                
+                Button {
+                    isSearchActive.toggle()
+                } label: {
+                    Image(systemName: "magnifyingglass.circle")
+                        .padding()
+                        .foregroundStyle(isSearchActive ? .red: .primary)
+                        .background(.ultraThinMaterial)
+                }
             }
             .onTapGesture { screenPoint in
                 guard isPinDroppingActive else { return }
@@ -72,6 +83,9 @@ struct MapView: View {
                     pendingPin =  Pin(coordinate: coordinate, name: "", comment: "", rating: 0)
                     isPinDroppingActive = false
                 }
+            }
+            .sheet(isPresented: $isSearchActive) {
+                SearchSheet()
             }
             .sheet(item: $pendingPin) {pin in
                 PinSheet(coordinate: pin.coordinate) {newPin in
