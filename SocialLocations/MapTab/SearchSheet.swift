@@ -11,6 +11,7 @@ import SwiftUI
 struct SearchSheet: View {
     @State private var search: String = ""
     @FocusState private var isSearchFocused: Bool
+    @State private var searchResultFinder = SearchResultFinder(completer: .init())
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -34,6 +35,24 @@ struct SearchSheet: View {
             .padding(10)
             .background(.ultraThinMaterial)
             
+            List {
+                ForEach(searchResultFinder.results) { SearchResult in
+                    Button(action: { }) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(SearchResult.title)
+                                .font(.headline)
+                                .fontDesign(.rounded)
+                            Text(SearchResult.subtitle)
+                        }
+                    }
+                    .listRowBackground(Color.clear)
+                }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+        }
+        .onChange(of: search) {
+            searchResultFinder.update(queryFragment: search)
         }
         .padding(10)
         .presentationDetents([.height(80), .medium])
