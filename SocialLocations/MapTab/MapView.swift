@@ -63,9 +63,9 @@ struct MapView: View {
                     Image(systemName: isPinDroppingActive ? "mappin.slash" : "mappin.circle.fill")
                         .padding()
                         .foregroundStyle(isPinDroppingActive ? .red: .primary)
-                        .background(.ultraThinMaterial)
                 }
-                .frame(width: 50, height: 100)
+                .buttonStyle(.bordered)
+                .tint(.black)
                 .padding(.top, 175)
                 
                 Button {
@@ -74,8 +74,9 @@ struct MapView: View {
                     Image(systemName: "magnifyingglass.circle")
                         .padding()
                         .foregroundStyle(isSearchActive ? .red: .primary)
-                        .background(.ultraThinMaterial)
                 }
+                .buttonStyle(.bordered)
+                .tint(.black)
             }
             .onTapGesture { screenPoint in
                 guard isPinDroppingActive else { return }
