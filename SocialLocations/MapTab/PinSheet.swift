@@ -11,7 +11,6 @@ import MapKit
 struct PinSheet: View {
     @EnvironmentObject var model: PinsModel
     
-//    var coordinate: CLLocationCoordinate2D
     var pinID: UUID
     var onDismiss: () -> Void
     
@@ -20,29 +19,30 @@ struct PinSheet: View {
     @State private var name: String = ""
     @State private var rating: Int = 3
     @State private var comment: String = ""
+    @State private var category: PinCategory = .other
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Your newest discovery").font(.largeTitle)
+            
             HStack {
-                Text("Address:").font(.headline)
+                Text("ADDRESS").font(.headline)
                 if let address = pin?.address {
                     Text(address).font(.subheadline)}
                 else {
                     ProgressView().scaleEffect(0.7)
                 }
-//                Text("Place's address").font(.subheadline) //I have to figure out how to use lookup so that each pin has their own address - this is justto test how it would look
             }
             
-            Text("Name:").font(.headline)
+            Text("NAME").font(.headline)
             TextField("How is this cool (or uncool) place called?", text: $name)
                 .textFieldStyle(.roundedBorder)
                 .onChange(of: name) { _, new in
-                        if new.count > 50 { comment = String(new.prefix(50)) }
-                    }
+                    if new.count > 50 { comment = String(new.prefix(50)) }
+                }
             
             HStack {
-                Text("Rating:").font(.headline)
+                Text("RATING").font(.headline)
                 ForEach(1...5, id: \.self) { star in
                     Image(systemName: star <= rating ? "star.fill" : "star")
                         .foregroundStyle(.yellow)
@@ -50,24 +50,36 @@ struct PinSheet: View {
                 }
             }
             
-            Text("Comment:").font(.headline)
+            Text("COMMENT").font(.headline)
             TextField("Your friends are counting on you. Spill it!", text: $comment, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
-                .lineLimit(3...3)
+                .lineLimit(3...5)
                 .onChange(of: comment) { _, new in
-                        if new.count > 150 { comment = String(new.prefix(150)) }
-                    }
+                    if new.count > 150 { comment = String(new.prefix(150)) }
+                }
             
-            Button("Save Pin") {
-                guard let index = model.pins.firstIndex(where: { $0.id == pinID }) else { return }
-                model.pins[index].name = name
-                model.pins[index].comment = comment
-                model.pins[index].rating = rating
-                onDismiss()
+            Text("CATEGORY").font(.headline)
+            Picker("Category", selection: $category) {
+                ForEach(PinCategory.allCases) { cat in
+                    Text(cat.rawValue).tag(cat)
+                }
             }
-            .buttonStyle(.borderedProminent)
+            .pickerStyle(.menu)
+            .padding(20)
+            .background(.background)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
         }
-        .padding()
-        .presentationDetents([.medium])
+     
+        Button("SAVE PIN") {
+            guard let index = model.pins.firstIndex(where: { $0.id == pinID }) else { return }
+            model.pins[index].name = name
+            model.pins[index].comment = comment
+            model.pins[index].rating = rating
+            model.pins[index].category = category
+            onDismiss()
+        }
+        .buttonStyle(.borderedProminent)
+        .frame(maxWidth: .infinity)
+        .controlSize(.large)
     }
 }

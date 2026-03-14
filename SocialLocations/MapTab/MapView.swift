@@ -14,7 +14,6 @@ extension UUID: @retroactive Identifiable {
 struct MapView: View {
     
     @StateObject private var pinsModel = PinsModel()
-//    @State private var pendingPin: Pin?
     @State private var pendingPinID: UUID?
     @State private var isPinDroppingActive: Bool = false
     @State private var isSearchActive: Bool = false
@@ -54,11 +53,7 @@ struct MapView: View {
                     }
                 }
             }
-            //This is the code for my sheet view for searching that isn't working yet
-//            .ignoresSafeArea()
-//            .sheet(isPresented: $isSheetPresented) {
-//                SearchSheet()
-//            }
+            
             .mapStyle(.standard())
             .overlay(alignment: .topTrailing) {
                 Button {
@@ -92,10 +87,7 @@ struct MapView: View {
                                 }
                             }
                         }
-                    
-//                    pendingPin =  Pin(coordinate: coordinate, name: "", comment: "", rating: 0)
-//                    isPinDroppingActive = false
-                
+            
             .sheet(isPresented: $isSearchActive) {
                 SearchSheet()
             }
