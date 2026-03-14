@@ -7,11 +7,15 @@
 
 import SwiftUI
 import MapKit
+extension UUID: @retroactive Identifiable {
+    public var id: UUID { self }
+}
 
 struct MapView: View {
     
     @StateObject private var pinsModel = PinsModel()
-    @State private var pendingPin: Pin?
+//    @State private var pendingPin: Pin?
+    @State private var pendingPinID: UUID?
     @State private var isPinDroppingActive: Bool = false
     @State private var isSearchActive: Bool = false
     
@@ -81,28 +85,27 @@ struct MapView: View {
             .onTapGesture { screenPoint in
                 guard isPinDroppingActive else { return }
                 if let coordinate = proxy.convert(screenPoint, from: .local) {
-                    pendingPin =  Pin(coordinate: coordinate, name: "", comment: "", rating: 0)
-                    isPinDroppingActive = false
-                }
-            }
+                    Task {
+                        await pinsModel.savePin(coordinate: coordinate, name: "", comment: "", rating: 0)
+                        pendingPinID = pinsModel.pins.last?.id
+                        isPinDroppingActive = false
+                                }
+                            }
+                        }
+                    
+//                    pendingPin =  Pin(coordinate: coordinate, name: "", comment: "", rating: 0)
+//                    isPinDroppingActive = false
+                
             .sheet(isPresented: $isSearchActive) {
                 SearchSheet()
             }
-            .sheet(item: $pendingPin) {pin in
-                PinSheet(coordinate: pin.coordinate) {newPin in
-                    Task{
-                        await pinsModel.savePin(
-                            coordinate: newPin.coordinate,
-                            name: newPin.name,
-                            comment: newPin.comment,
-                            rating: newPin.rating)
-                    }
-                    pendingPin = nil
+            .sheet(item: $pendingPinID) { id in
+                PinSheet(pinID: id, onDismiss: { pendingPinID = nil })
+                    .environmentObject(pinsModel)
                 }
             }
         }
     }
-}
 
 #Preview {
     MapView()

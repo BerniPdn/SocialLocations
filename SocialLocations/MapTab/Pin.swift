@@ -25,9 +25,9 @@ class PinsModel: ObservableObject {
     func savePin(coordinate: CLLocationCoordinate2D, name: String, comment: String, rating: Int) async{
         let newPin = Pin(coordinate: coordinate, name: name, comment: comment, rating: rating)
         pins.append(newPin)
-        await MainActor.run{
-            pins.append(newPin)
-        }
+//        await MainActor.run{
+//            pins.append(newPin)
+//        }
         await lookupAddress(for: newPin.id)
     }
     

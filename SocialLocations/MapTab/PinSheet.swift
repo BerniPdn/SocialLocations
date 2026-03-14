@@ -9,8 +9,13 @@ import SwiftUI
 import MapKit
 
 struct PinSheet: View {
-    var coordinate: CLLocationCoordinate2D
-    var onSave: (Pin) -> Void
+    @EnvironmentObject var model: PinsModel
+    
+//    var coordinate: CLLocationCoordinate2D
+    var pinID: UUID
+    var onDismiss: () -> Void
+    
+    private var pin: Pin? {model.pins.first(where: { $0.id == pinID })}
     
     @State private var name: String = ""
     @State private var rating: Int = 3
@@ -21,7 +26,12 @@ struct PinSheet: View {
             Text("Your newest discovery").font(.largeTitle)
             HStack {
                 Text("Address:").font(.headline)
-                Text("Place's address").font(.subheadline) //I have to figure out how to use lookup so that each pin has their own address - this is justto test how it would look
+                if let address = pin?.address {
+                    Text(address).font(.subheadline)}
+                else {
+                    ProgressView().scaleEffect(0.7)
+                }
+//                Text("Place's address").font(.subheadline) //I have to figure out how to use lookup so that each pin has their own address - this is justto test how it would look
             }
             
             Text("Name:").font(.headline)
@@ -49,12 +59,11 @@ struct PinSheet: View {
                     }
             
             Button("Save Pin") {
-                let pin = Pin(
-                    coordinate: coordinate,
-                    name: name,
-                    comment: comment,
-                    rating: rating)
-                onSave(pin)
+                guard let index = model.pins.firstIndex(where: { $0.id == pinID }) else { return }
+                model.pins[index].name = name
+                model.pins[index].comment = comment
+                model.pins[index].rating = rating
+                onDismiss()
             }
             .buttonStyle(.borderedProminent)
         }
