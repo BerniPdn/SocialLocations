@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9245551F2F646B78004BC7AC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9245551E2F646B78004BC7AC /* GoogleService-Info.plist */; };
+		924555252F647313004BC7AC /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 924555242F647313004BC7AC /* FirebaseCore */; };
+		924555272F647320004BC7AC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 924555262F647320004BC7AC /* FirebaseAuth */; };
+		924555292F647328004BC7AC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 924555282F647328004BC7AC /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		C3F67CBB2F579BFA00B9A5CE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9245551E2F646B78004BC7AC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C3F67CAD2F579BF800B9A5CE /* SocialLocations.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SocialLocations.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F67CBA2F579BFA00B9A5CE /* SocialLocationsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SocialLocationsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F67CC42F579BFA00B9A5CE /* SocialLocationsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SocialLocationsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +60,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				924555252F647313004BC7AC /* FirebaseCore in Frameworks */,
+				924555272F647320004BC7AC /* FirebaseAuth in Frameworks */,
+				924555292F647328004BC7AC /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,12 +83,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		924555232F647313004BC7AC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C3F67CA42F579BF800B9A5CE = {
 			isa = PBXGroup;
 			children = (
 				C3F67CAF2F579BF800B9A5CE /* SocialLocations */,
 				C3F67CBD2F579BFA00B9A5CE /* SocialLocationsTests */,
 				C3F67CC72F579BFA00B9A5CE /* SocialLocationsUITests */,
+				9245551E2F646B78004BC7AC /* GoogleService-Info.plist */,
+				924555232F647313004BC7AC /* Frameworks */,
 				C3F67CAE2F579BF800B9A5CE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -112,6 +132,9 @@
 			);
 			name = SocialLocations;
 			packageProductDependencies = (
+				924555242F647313004BC7AC /* FirebaseCore */,
+				924555262F647320004BC7AC /* FirebaseAuth */,
+				924555282F647328004BC7AC /* FirebaseFirestore */,
 			);
 			productName = SocialLocations;
 			productReference = C3F67CAD2F579BF800B9A5CE /* SocialLocations.app */;
@@ -195,6 +218,9 @@
 			);
 			mainGroup = C3F67CA42F579BF800B9A5CE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				924555202F646D43004BC7AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C3F67CAE2F579BF800B9A5CE /* Products */;
 			projectDirPath = "";
@@ -212,6 +238,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9245551F2F646B78004BC7AC /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -570,6 +597,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		924555202F646D43004BC7AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		924555242F647313004BC7AC /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 924555202F646D43004BC7AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		924555262F647320004BC7AC /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 924555202F646D43004BC7AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		924555282F647328004BC7AC /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 924555202F646D43004BC7AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C3F67CA52F579BF800B9A5CE /* Project object */;
 }

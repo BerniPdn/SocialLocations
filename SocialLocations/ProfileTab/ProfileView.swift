@@ -6,6 +6,11 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+
+var userEmail: String {
+    Auth.auth().currentUser?.email ?? "No email"
+}
 
 struct ProfileView: View {
     var body: some View {
@@ -18,7 +23,7 @@ struct ProfileView: View {
                     .foregroundColor(.gray)
                     .padding(.top, 40)
                 
-                Text("Bernarda Perez")
+                Text(userEmail)
                     .font(.title)
                     .fontWeight(.bold)
                 

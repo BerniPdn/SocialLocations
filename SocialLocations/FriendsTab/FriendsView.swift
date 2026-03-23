@@ -8,25 +8,26 @@
 import SwiftUI
 
 struct FriendsView: View {
-    // Placeholder data
-    let friends = ["Alex", "Jordan", "Taylor", "Sam"]
+    
+    @StateObject private var viewModel = FriendsViewModel()
 
     var body: some View {
         NavigationStack {
-            List(friends, id: \.self) { friend in
+            List(viewModel.friendIDs, id: \.self) { friendID in
+                
                 HStack {
                     Image(systemName: "person.circle.fill")
                         .resizable()
                         .frame(width: 40, height: 40)
                         .foregroundColor(.blue)
                     
-                    Text(friend)
+                    Text(friendID)
                         .font(.headline)
                     
                     Spacer()
                     
                     Button("View") {
-                        // Action to see friend on map
+                        // TODO: Show friend's pins on map
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
@@ -35,7 +36,8 @@ struct FriendsView: View {
             }
             .navigationTitle("Friends")
             .toolbar {
-                Button(action: { /* Add friend action */ }) {
+                Button(action: { // TODO: Navigate to search friends view
+                }) {
                     Image(systemName: "person.badge.plus")
                 }
             }
