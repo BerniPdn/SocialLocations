@@ -15,6 +15,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
     FirebaseApp.configure()
+    print("Firebase configured successfully!") // CHECK: will print in the terminal when the build can run successfully (no errors left)
 
     return true
   }
