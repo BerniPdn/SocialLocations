@@ -9,6 +9,17 @@ import SwiftUI
 import MapKit
 internal import Combine
 
+enum PinCategory: String, CaseIterable, Identifiable {
+    case food = "Food"
+    case nightlife = "Nightlife"
+    case nature = "Nature"
+    case shopping = "Shopping"
+    case culture = "Culture and Education"
+    case other = "Other"
+    
+    var id: String { rawValue }
+}
+
 struct Pin: Identifiable{
     let id = UUID()
     let coordinate: CLLocationCoordinate2D
@@ -16,6 +27,7 @@ struct Pin: Identifiable{
     var address: String?
     var comment: String
     var rating: Int
+    var category: PinCategory = .other
 }
 
 @MainActor
@@ -25,9 +37,6 @@ class PinsModel: ObservableObject {
     func savePin(coordinate: CLLocationCoordinate2D, name: String, comment: String, rating: Int) async{
         let newPin = Pin(coordinate: coordinate, name: name, comment: comment, rating: rating)
         pins.append(newPin)
-        await MainActor.run{
-            pins.append(newPin)
-        }
         await lookupAddress(for: newPin.id)
     }
     
@@ -47,7 +56,6 @@ class PinsModel: ObservableObject {
             
             if let first = mapItems.first, let mkAddress = first.address {
                 pins[index].address = mkAddress.shortAddress
-                print("Address saved:", mkAddress.shortAddress)
             }
         } catch {
             print("Reverse geocoding failed:", error)
@@ -55,7 +63,8 @@ class PinsModel: ObservableObject {
     }
     
     func removePin(_ pin: Pin){
-        pins.removeAll { $0.id == pin.id } //This is the same as writting eachPin in eachPin.id == pin.id - very useful shorthand in Swift!! - the $0 means: the first argument
+        pins.removeAll { $0.id == pin.id }
     }
+    
 }
 

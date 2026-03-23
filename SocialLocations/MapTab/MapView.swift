@@ -7,9 +7,17 @@
 
 import SwiftUI
 import MapKit
+extension UUID: @retroactive Identifiable {
+    public var id: UUID { self }
+}
 
 struct MapView: View {
+    
     @StateObject private var pinsModel = PinsModel()
+    @State private var pendingPinID: UUID?
+    @State private var isPinDroppingActive: Bool = false
+    @State private var isSearchActive: Bool = false
+    
     
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(
@@ -18,9 +26,12 @@ struct MapView: View {
         )
     )
     
+    @State private var isSheetPresented: Bool = true
+    
     var body: some View {
         MapReader { proxy in
             Map(position: $position) {
+                
                 
                 ForEach(FixedLocations.all, id: \.name) { location in
                     Annotation(location.name, coordinate: location.coordinate) {
@@ -38,32 +49,55 @@ struct MapView: View {
                                 .scaledToFit()
                                 .frame(width: 40, height: 40)
                                 .clipShape(Circle())
-                            
-                            if let address = pin.address {
-                                Text(address)
-                                    .font(.custom("Times New Roman", fixedSize: 10))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(.black)
-                            } else {
-                                Text("Loading…")
-                                    .font(.caption2)
-                                    .foregroundColor(.gray)
-                            }
                         }
                     }
                 }
             }
+            
             .mapStyle(.standard())
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    isPinDroppingActive.toggle()
+                } label: {
+                    Image(systemName: isPinDroppingActive ? "mappin.slash" : "mappin.circle.fill")
+                        .padding()
+                        .foregroundStyle(isPinDroppingActive ? .red: .primary)
+                }
+                .buttonStyle(.bordered)
+                .tint(.black)
+                .padding(.top, 175)
+                
+                Button {
+                    isSearchActive.toggle()
+                } label: {
+                    Image(systemName: "magnifyingglass.circle")
+                        .padding()
+                        .foregroundStyle(isSearchActive ? .red: .primary)
+                }
+                .buttonStyle(.bordered)
+                .tint(.black)
+            }
             .onTapGesture { screenPoint in
+                guard isPinDroppingActive else { return }
                 if let coordinate = proxy.convert(screenPoint, from: .local) {
                     Task {
-                        await pinsModel.savePin(coordinate: coordinate, name: "", comment: "", rating: 0) //I have to find a way so that the user can add this infomation, and then when you press an Pin you can see it
-                    }
+                        await pinsModel.savePin(coordinate: coordinate, name: "", comment: "", rating: 0)
+                        pendingPinID = pinsModel.pins.last?.id
+                        isPinDroppingActive = false
+                                }
+                            }
+                        }
+            
+            .sheet(isPresented: $isSearchActive) {
+                SearchSheet()
+            }
+            .sheet(item: $pendingPinID) { id in
+                PinSheet(pinID: id, onDismiss: { pendingPinID = nil })
+                    .environmentObject(pinsModel)
                 }
             }
         }
     }
-}
 
 #Preview {
     MapView()
