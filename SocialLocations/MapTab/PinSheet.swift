@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 
 struct PinSheet: View {
-    @EnvironmentObject var model: PinsModel
+    @EnvironmentObject var model: PinsViewModel
     
     var pinID: UUID
     var onDismiss: () -> Void
