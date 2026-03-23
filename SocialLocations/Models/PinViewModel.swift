@@ -8,10 +8,9 @@
 import SwiftUI
 import MapKit
 import FirebaseFirestore
-import Combine
+//import Combine
 
-@ObservableObject
-class PinsViewModel {
+class PinsViewModel: ObservableObject {
 
     @Published var pins: [Pin] = []
 

@@ -5,8 +5,9 @@
 //  Created by Irene Gallini on 3/22/26.
 //
 
-import Foundation
-import Combine
+//import Foundation
+//import Combine
+import SwiftUI
 
 class FriendsViewModel: ObservableObject {
 
