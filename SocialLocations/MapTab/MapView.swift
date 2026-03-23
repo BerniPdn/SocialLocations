@@ -91,20 +91,19 @@ struct MapView: View {
                 SearchSheet()
             }
             .sheet(isPresented: Binding(
-                get: { pendingPinID != nil },
-                set: { if !$0 { pendingPinID = nil } }
-            )) {
-                if let id = pendingPinID {
-                    PinSheet(pinID: id, onDismiss: { pendingPinID = nil })
-                        .environmentObject(pinsModel)
-                }
-            } { id in
-                PinSheet(pinID: id, onDismiss: { pendingPinID = nil })
-                    .environmentObject(pinsModel)
+                            get: { pendingPinID != nil },
+                            set: { if !$0 { pendingPinID = nil } }
+                        )) {
+                            if let id = pendingPinID {
+                                PinSheet(pinID: id, onDismiss: {
+                                    pendingPinID = nil
+                                })
+                                .environmentObject(pinsModel)
+                            }
+                        }
+                    }
                 }
             }
-        }
-    }
 
 #Preview {
     MapView()
