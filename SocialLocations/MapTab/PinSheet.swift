@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 
 struct PinSheet: View {
-    @EnvironmentObject var model: PinsModel
+    @EnvironmentObject var model: PinsViewModel
     
     var pinID: UUID
     var onDismiss: () -> Void
@@ -69,14 +69,16 @@ struct PinSheet: View {
             .background(.background)
             .clipShape(RoundedRectangle(cornerRadius: 20))
         }
-     
-        Button("SAVE PIN") {
-            guard let index = model.pins.firstIndex(where: { $0.id == pinID }) else { return }
+        
+        Button(action: {
+            guard let index = model.pins.firstIndex(where: { $0.id == pinID }) else {return}
             model.pins[index].name = name
             model.pins[index].comment = comment
             model.pins[index].rating = rating
             model.pins[index].category = category
             onDismiss()
+        }) {
+            Text("SAVE PIN")
         }
         .buttonStyle(.borderedProminent)
         .frame(maxWidth: .infinity)
