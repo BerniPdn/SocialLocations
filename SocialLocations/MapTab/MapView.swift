@@ -7,13 +7,13 @@
 
 import SwiftUI
 import MapKit
-extension UUID: @retroactive Identifiable {
-    public var id: UUID { self }
-}
+//extension UUID: @retroactive Identifiable {
+//    public var id: UUID { self }
+//}
 
 struct MapView: View {
     @StateObject private var pinsModel = PinsViewModel()
-    @State private var pendingPinID: UUID?
+    @State private var pendingPinID: String?
     @State private var isPinDroppingActive: Bool = false
     @State private var isSearchActive: Bool = false
     
@@ -90,7 +90,15 @@ struct MapView: View {
             .sheet(isPresented: $isSearchActive) {
                 SearchSheet()
             }
-            .sheet(item: $pendingPinID) { id in
+            .sheet(isPresented: Binding(
+                get: { pendingPinID != nil },
+                set: { if !$0 { pendingPinID = nil } }
+            )) {
+                if let id = pendingPinID {
+                    PinSheet(pinID: id, onDismiss: { pendingPinID = nil })
+                        .environmentObject(pinsModel)
+                }
+            } { id in
                 PinSheet(pinID: id, onDismiss: { pendingPinID = nil })
                     .environmentObject(pinsModel)
                 }

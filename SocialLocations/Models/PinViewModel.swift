@@ -8,7 +8,7 @@
 import SwiftUI
 import MapKit
 import FirebaseFirestore
-//import Combine
+import Combine
 
 class PinsViewModel: ObservableObject {
 
