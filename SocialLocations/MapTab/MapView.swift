@@ -13,7 +13,8 @@ extension UUID: @retroactive Identifiable {
 
 struct MapView: View {
     
-    @StateObject private var pinsModel = PinsModel()
+    // TODO: @StateObject private var pinsModel = PinsViewModel() instead
+    //@StateObject private var pinsModel = PinsModel()
     @State private var pendingPinID: UUID?
     @State private var isPinDroppingActive: Bool = false
     @State private var isSearchActive: Bool = false

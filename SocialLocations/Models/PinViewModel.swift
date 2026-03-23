@@ -5,11 +5,11 @@
 //  Created by Irene Gallini on 3/22/26.
 //
 
-import Foundation
+import SwiftUI
 import MapKit
 import FirebaseFirestore
 
-class PinsModel: ObservableObject {
+class PinsViewModel: ObservableObject {
 
     @Published var pins: [Pin] = []
 
@@ -17,8 +17,11 @@ class PinsModel: ObservableObject {
         listenToPins()
     }
 
-    // SAVE PIN
-    func savePin(coordinate: CLLocationCoordinate2D, name: String, comment: String, rating: Int) async {
+    // SAVE PIN → Firestore
+    func savePin(coordinate: CLLocationCoordinate2D,
+                 name: String,
+                 comment: String,
+                 rating: Int) async {
 
         FirestoreManager.shared.addPin(
             latitude: coordinate.latitude,
@@ -27,7 +30,7 @@ class PinsModel: ObservableObject {
         )
     }
 
-    // LISTEN TO PINS (REALTIME)
+    // REALTIME LISTENER
     func listenToPins() {
 
         FirestoreManager.shared.listenToPins { documents in
@@ -41,9 +44,11 @@ class PinsModel: ObservableObject {
 
                     return Pin(
                         id: doc.documentID,
-                        name: title,
                         coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
-                        address: nil
+                        name: title,
+                        address: nil,
+                        comment: "",
+                        rating: 0
                     )
                 }
             }

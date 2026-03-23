@@ -7,7 +7,7 @@
 
 import SwiftUI
 import MapKit
-internal import Combine
+//internal import Combine
 
 enum PinCategory: String, CaseIterable, Identifiable {
     case food = "Food"
@@ -30,6 +30,7 @@ struct Pin: Identifiable{
     var category: PinCategory = .other
 }
 
+// TODO: move this to it's own PinModel file so it can be used for database too -> cleaner directory
 @MainActor
 class PinsModel: ObservableObject {
     @Published var pins: [Pin] = []
@@ -37,10 +38,10 @@ class PinsModel: ObservableObject {
     func savePin(coordinate: CLLocationCoordinate2D, name: String, comment: String, rating: Int) async{
         let newPin = Pin(coordinate: coordinate, name: name, comment: comment, rating: rating)
         pins.append(newPin)
-        await lookupAddress(for: newPin.id)
+        //await lookupAddress(for: newPin.id)
     }
     
-    func lookupAddress(for id: UUID) async {
+    func lookupAddress(for id: UUID) async { //CHANGE: firestore gives a doc.documentID (string) 
         guard let index = pins.firstIndex(where: { $0.id == id }) else { return }
         
         let coordinate = pins[index].coordinate
