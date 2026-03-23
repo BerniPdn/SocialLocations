@@ -11,7 +11,7 @@ import MapKit
 struct PinSheet: View {
     @EnvironmentObject var model: PinsViewModel
     
-    var pinID: UUID
+    var pinID: String
     var onDismiss: () -> Void
     
     private var pin: Pin? {model.pins.first(where: { $0.id == pinID })}

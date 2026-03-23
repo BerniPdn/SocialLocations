@@ -21,7 +21,7 @@ enum PinCategory: String, CaseIterable, Identifiable {
 }
 
 struct Pin: Identifiable{
-    let id = String
+    let id: String
     let coordinate: CLLocationCoordinate2D
     var name: String
     var address: String?
