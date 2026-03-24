@@ -23,16 +23,18 @@ struct PinSheet: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 25) {
+            // HEADING
             Text("Your newest discovery")
                 .font(.system(.largeTitle, design: .rounded))
                 .fontWeight(.bold)
                 .padding(.top, 20)
             
+            //ADDRESS SECTION
             VStack(alignment: .leading, spacing: 8) {
                 Label("LOCATION", systemImage: "mappin.and.ellipse")
-                    .font(.caption.bold())
+                    .font(.subheadline.bold())
                     .foregroundStyle(.secondary)
-                                
+                
                 HStack {
                     if let address = pin?.address {
                         Text(address)
@@ -48,9 +50,11 @@ struct PinSheet: View {
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(12)
             }
+            
+            //NAME SECTION
             VStack(alignment: .leading, spacing: 8) {
                 Text("NAME")
-                    .font(.caption.bold())
+                    .font(.subheadline.bold())
                     .foregroundStyle(.secondary)
                 
                 TextField("How is this cool (or uncool) place called?", text: $name)
@@ -61,19 +65,48 @@ struct PinSheet: View {
                         if new.count > 50 { comment = String(new.prefix(50)) }
                     }
             }
-            
+            //RATING AND CATEGORY SECTIONS
             HStack (spacing: 20) {
-                Text("RATING").font(.headline)
-                ForEach(1...5, id: \.self) { star in
-                    Image(systemName: star <= rating ? "star.fill" : "star")
-                        .foregroundStyle(.yellow)
-                        .onTapGesture { rating = star }
+                VStack(alignment: .leading, spacing: 8){
+                    Text("RATING")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.secondary)
+                    
+                    HStack(spacing:4){
+                        ForEach(1...5, id: \.self) { star in
+                            Image(systemName: star <= rating ? "star.fill" : "star")
+                                .foregroundStyle(.yellow)
+                                .font(.title3)
+                                .onTapGesture {
+                                    withAnimation(.spring()){
+                                        rating = star }
+                                }
+                        }
+                    }
+                }
+                
+                Spacer()
+                VStack(alignment: .leading, spacing: 8){
+                    Text("CATEGORY")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.secondary)
+                    
+                    Picker("Category", selection: $category) {
+                        ForEach(PinCategory.allCases, id: \.self) { cat in
+                            Text(cat.rawValue).tag(cat)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(8)
                 }
             }
             
+            //COMMENT SECTION
             VStack(alignment: .leading, spacing: 8) {
                 Text("COMMENT")
-                    .font(.caption.bold())
+                    .font(.subheadline.bold())
                     .foregroundStyle(.secondary)
                 
                 TextField("Your friends are counting on you. Spill it!", text: $comment, axis: .vertical)
@@ -86,30 +119,44 @@ struct PinSheet: View {
                     }
             }
             
-            Text("CATEGORY").font(.headline)
-            Picker("Category", selection: $category) {
-                ForEach(PinCategory.allCases) { cat in
-                    Text(cat.rawValue).tag(cat)
-                }
+            Button(action: {
+                saveAndDismiss()
+            }) {
+                Text("SAVE PIN")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.blue)
+                    .clipShape(Capsule())
             }
-            .pickerStyle(.menu)
-            .padding(20)
-            .background(.background)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .padding(.top, 10)
+            .padding(.bottom, 40)
+        }
+        .padding(.horizontal, 24)
+    }
+    
+    //SUPPOSED TO SAVE THE PIN - STILL NOT REALLY WORKING THOUGH - WE HAVE ANOTHER SAVEPIN FUNCTION I HAVE TO ALSO LOOK AT IT
+    private func saveAndDismiss() {
+        guard let currentPin = pin,
+              let index = model.pins.firstIndex(where: { $0.id == pinID }) else { return }
+        
+        model.pins[index].name = name
+        model.pins[index].comment = comment
+        model.pins[index].rating = rating
+        model.pins[index].category = category
+        
+        Task {
+            await model.savePin(
+                coordinate: currentPin.coordinate,
+                name: name,
+                comment: comment,
+                rating: rating,
+                category: category,
+                id: pinID
+            )
         }
         
-        Button(action: {
-            guard let index = model.pins.firstIndex(where: { $0.id == pinID }) else {return}
-            model.pins[index].name = name
-            model.pins[index].comment = comment
-            model.pins[index].rating = rating
-            model.pins[index].category = category
-            onDismiss()
-        }) {
-            Text("SAVE PIN")
-        }
-        .buttonStyle(.borderedProminent)
-        .frame(maxWidth: .infinity)
-        .controlSize(.large)
+        onDismiss()
     }
 }
