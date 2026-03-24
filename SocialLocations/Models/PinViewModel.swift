@@ -53,12 +53,41 @@ class PinsViewModel: ObservableObject {
                         id: doc.documentID,
                         coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
                         name: title,
-                        address: nil,
+                        address: self.pins.first(where: { $0.id == doc.documentID })?.address,
                         comment: "",
                         rating: 0
                     )
                 }
+                for pin in self.pins {
+                    Task {
+                        await self.lookupAddress(for: pin.id)
+                    }
+                }
             }
         }
     }
+    
+    
+    // LOOK UP ADDRESS
+     func lookupAddress(for id: String) async {
+         guard let index = pins.firstIndex(where: { $0.id == id }) else { return }
+        
+         let coordinate = pins[index].coordinate
+         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        
+         guard let request = MKReverseGeocodingRequest(location: location) else {
+             print("Failed to create reverse geocoding request")
+             return
+         }
+        
+         do {
+             let mapItems = try await request.mapItems
+            
+             if let first = mapItems.first, let mkAddress = first.address {
+                 pins[index].address = mkAddress.shortAddress
+             }
+         } catch {
+             print("Reverse geocoding failed:", error)
+         }
+     }
 }
