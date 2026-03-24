@@ -19,13 +19,14 @@ class PinsViewModel: ObservableObject {
     }
 
     // SAVE PIN → Firestore
-    func savePin(coordinate: CLLocationCoordinate2D,
-                 name: String,
-                 comment: String,
-                 rating: Int,
-                 category: PinCategory,
-                 id: String = UUID().uuidString) async {
-
+    func savePin(
+        coordinate: CLLocationCoordinate2D,
+        name: String,
+        comment: String,
+        rating: Int,
+        category: PinCategory,
+        id: String = UUID().uuidString
+    ) async {
         FirestoreManager.shared.addPin(
             id: id,
             latitude: coordinate.latitude,
@@ -39,15 +40,16 @@ class PinsViewModel: ObservableObject {
 
     // REALTIME LISTENER
     func listenToPins() {
-
         FirestoreManager.shared.listenToPins { documents in
-
             DispatchQueue.main.async {
-                self.pins = documents.map { doc in
+                self.pins = documents.compactMap { doc in
 
-                    let lat = doc["latitude"] as? Double ?? 0
-                    let lon = doc["longitude"] as? Double ?? 0
-                    let title = doc["title"] as? String ?? ""
+                    guard let lat = doc["latitude"] as? Double,
+                          let lon = doc["longitude"] as? Double,
+                          let title = doc["title"] as? String
+                    else {
+                        return nil
+                    }
 
                     return Pin(
                         id: doc.documentID,
