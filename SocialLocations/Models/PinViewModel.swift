@@ -25,6 +25,18 @@ class PinsViewModel: ObservableObject {
                  rating: Int,
                  category: PinCategory,
                  id: String = UUID().uuidString) async {
+        
+        await MainActor.run {
+                pins.append(Pin(
+                    id: id,
+                    coordinate: coordinate,
+                    name: name,
+                    address: nil,
+                    comment: comment,
+                    rating: rating,
+                    category: category
+                ))
+            }
 
         FirestoreManager.shared.addPin(
             id: id,
@@ -44,24 +56,21 @@ class PinsViewModel: ObservableObject {
 
             DispatchQueue.main.async {
                 self.pins = documents.map { doc in
-
+                    
                     let lat = doc["latitude"] as? Double ?? 0
                     let lon = doc["longitude"] as? Double ?? 0
                     let title = doc["title"] as? String ?? ""
-
+                    let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
+                    
+                    
                     return Pin(
                         id: doc.documentID,
                         coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
                         name: title,
-                        address: self.pins.first(where: { $0.id == doc.documentID })?.address,
+                        address: existingAddress,
                         comment: "",
                         rating: 0
                     )
-                }
-                for pin in self.pins {
-                    Task {
-                        await self.lookupAddress(for: pin.id)
-                    }
                 }
             }
         }

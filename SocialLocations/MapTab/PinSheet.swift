@@ -119,6 +119,10 @@ struct PinSheet: View {
                     }
             }
             
+            .task {
+                await model.lookupAddress(for: pinID)
+            }
+            
             Button(action: {
                 saveAndDismiss()
             }) {
@@ -136,7 +140,6 @@ struct PinSheet: View {
         .padding(.horizontal, 24)
     }
     
-    //SUPPOSED TO SAVE THE PIN - STILL NOT REALLY WORKING THOUGH - WE HAVE ANOTHER SAVEPIN FUNCTION I HAVE TO ALSO LOOK AT IT
     private func saveAndDismiss() {
         guard let currentPin = pin,
               let index = model.pins.firstIndex(where: { $0.id == pinID }) else { return }
