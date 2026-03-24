@@ -22,26 +22,47 @@ struct PinSheet: View {
     @State private var category: PinCategory = .other
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Your newest discovery").font(.largeTitle)
+        VStack(alignment: .leading, spacing: 25) {
+            Text("Your newest discovery")
+                .font(.system(.largeTitle, design: .rounded))
+                .fontWeight(.bold)
+                .padding(.top, 20)
             
-            HStack {
-                Text("ADDRESS").font(.headline)
-                if let address = pin?.address {
-                    Text(address).font(.subheadline)}
-                else {
-                    ProgressView().scaleEffect(0.7)
+            VStack(alignment: .leading, spacing: 8) {
+                Label("LOCATION", systemImage: "mappin.and.ellipse")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                                
+                HStack {
+                    if let address = pin?.address {
+                        Text(address)
+                            .font(.callout)
+                    } else {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                        Text("Locating...").font(.caption).italic()
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .cornerRadius(12)
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                Text("NAME")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                
+                TextField("How is this cool (or uncool) place called?", text: $name)
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(12)
+                    .onChange(of: name) { _, new in
+                        if new.count > 50 { comment = String(new.prefix(50)) }
+                    }
             }
             
-            Text("NAME").font(.headline)
-            TextField("How is this cool (or uncool) place called?", text: $name)
-                .textFieldStyle(.roundedBorder)
-                .onChange(of: name) { _, new in
-                    if new.count > 50 { comment = String(new.prefix(50)) }
-                }
-            
-            HStack {
+            HStack (spacing: 20) {
                 Text("RATING").font(.headline)
                 ForEach(1...5, id: \.self) { star in
                     Image(systemName: star <= rating ? "star.fill" : "star")
@@ -50,13 +71,20 @@ struct PinSheet: View {
                 }
             }
             
-            Text("COMMENT").font(.headline)
-            TextField("Your friends are counting on you. Spill it!", text: $comment, axis: .vertical)
-                .textFieldStyle(.roundedBorder)
-                .lineLimit(3...5)
-                .onChange(of: comment) { _, new in
-                    if new.count > 150 { comment = String(new.prefix(150)) }
-                }
+            VStack(alignment: .leading, spacing: 8) {
+                Text("COMMENT")
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+                
+                TextField("Your friends are counting on you. Spill it!", text: $comment, axis: .vertical)
+                    .lineLimit(3...5)
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(12)
+                    .onChange(of: comment) { _, new in
+                        if new.count > 150 { comment = String(new.prefix(150)) }
+                    }
+            }
             
             Text("CATEGORY").font(.headline)
             Picker("Category", selection: $category) {
