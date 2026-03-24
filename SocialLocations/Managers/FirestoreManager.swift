@@ -15,16 +15,26 @@ class FirestoreManager {
 
     // PINS
 
-    func addPin(latitude: Double, longitude: Double, title: String) {
+    func addPin(id: String, latitude: Double, longitude: Double, title: String, comment: String, rating: Int, category: String) {
         guard let userId = Auth.auth().currentUser?.uid else { return }
 
-        db.collection("pins").addDocument(data: [
+        db.collection("pins").document(id).setData([
             "userId": userId,
             "latitude": latitude,
             "longitude": longitude,
             "title": title,
+            "comment": comment,
+            "rating": rating,
+            "category": category,
             "timestamp": Timestamp()
         ])
+        {error in
+            if let error = error {
+                print("Firestore error: \(error)")
+            } else {
+                print("Pin saved to Firestore with id: \(id)")
+            }
+        }
     }
 
     func listenToPins(completion: @escaping ([QueryDocumentSnapshot]) -> Void) {

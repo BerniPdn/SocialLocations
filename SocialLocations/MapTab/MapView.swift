@@ -79,13 +79,23 @@ struct MapView: View {
             .onTapGesture { screenPoint in
                 guard isPinDroppingActive else { return }
                 if let coordinate = proxy.convert(screenPoint, from: .local) {
+                    let tempID = UUID().uuidString
                     Task {
-                        await pinsModel.savePin(coordinate: coordinate, name: "", comment: "", rating: 0)
-                        pendingPinID = pinsModel.pins.last?.id
-                        isPinDroppingActive = false
-                                }
-                            }
+                        await pinsModel.savePin(
+                            coordinate: coordinate,
+                            name: "",
+                            comment: "",
+                            rating: 0,
+                            category: .other,
+                            id:tempID)
+                        
+                        await MainActor.run {
+                            pendingPinID = tempID
+                            isPinDroppingActive = false
                         }
+                    }
+                }
+            }
             
             .sheet(isPresented: $isSearchActive) {
                 SearchSheet()

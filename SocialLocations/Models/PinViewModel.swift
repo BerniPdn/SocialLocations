@@ -22,12 +22,18 @@ class PinsViewModel: ObservableObject {
     func savePin(coordinate: CLLocationCoordinate2D,
                  name: String,
                  comment: String,
-                 rating: Int) async {
+                 rating: Int,
+                 category: PinCategory,
+                 id: String = UUID().uuidString) async {
 
         FirestoreManager.shared.addPin(
+            id: id,
             latitude: coordinate.latitude,
             longitude: coordinate.longitude,
-            title: name
+            title: name,
+            comment: comment,
+            rating: rating,
+            category: category.rawValue
         )
     }
 
