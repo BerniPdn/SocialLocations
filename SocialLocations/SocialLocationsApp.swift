@@ -17,10 +17,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     FirebaseApp.configure()
     print("Firebase configured successfully!") // CHECK: will print in the terminal when the build can run successfully (no errors left)
 
-    return true
+    return true	
   }
 }
-
+	
 @main
 struct SocialLocationsApp: App {
     
