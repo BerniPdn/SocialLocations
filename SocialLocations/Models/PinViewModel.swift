@@ -19,14 +19,25 @@ class PinsViewModel: ObservableObject {
     }
 
     // SAVE PIN → Firestore
-    func savePin(
-        coordinate: CLLocationCoordinate2D,
-        name: String,
-        comment: String,
-        rating: Int,
-        category: PinCategory,
-        id: String = UUID().uuidString
-    ) async {
+    func savePin(coordinate: CLLocationCoordinate2D,
+                 name: String,
+                 comment: String,
+                 rating: Int,
+                 category: PinCategory,
+                 id: String = UUID().uuidString) async {
+        
+        await MainActor.run {
+                pins.append(Pin(
+                    id: id,
+                    coordinate: coordinate,
+                    name: name,
+                    address: nil,
+                    comment: comment,
+                    rating: rating,
+                    category: category
+                ))
+            }
+
         FirestoreManager.shared.addPin(
             id: id,
             latitude: coordinate.latitude,
@@ -42,6 +53,7 @@ class PinsViewModel: ObservableObject {
     func listenToPins() {
         FirestoreManager.shared.listenToPins { documents in
             DispatchQueue.main.async {
+<<<<<<< HEAD
                 self.pins = documents.compactMap { doc in
 
                     guard let lat = doc["latitude"] as? Double,
@@ -51,19 +63,24 @@ class PinsViewModel: ObservableObject {
                         return nil
                     }
 
+=======
+                self.pins = documents.map { doc in
+                    
+                    let lat = doc["latitude"] as? Double ?? 0
+                    let lon = doc["longitude"] as? Double ?? 0
+                    let title = doc["title"] as? String ?? ""
+                    let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
+                    
+                    
+>>>>>>> 60427f9f5506af2ff5bfe41576e8b00ecddad684
                     return Pin(
                         id: doc.documentID,
                         coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
                         name: title,
-                        address: self.pins.first(where: { $0.id == doc.documentID })?.address,
+                        address: existingAddress,
                         comment: "",
                         rating: 0
                     )
-                }
-                for pin in self.pins {
-                    Task {
-                        await self.lookupAddress(for: pin.id)
-                    }
                 }
             }
         }
