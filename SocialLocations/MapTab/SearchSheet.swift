@@ -11,10 +11,11 @@ import SwiftUI
 struct SearchSheet: View {
     @State private var search: String = ""
     @FocusState private var isSearchFocused: Bool
-    @State private var searchResultFinder = SearchResultFinder(completer: .init())
+    @State private var searchResultFinder = SearchResultFinder()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            //Search Bar
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
@@ -35,26 +36,33 @@ struct SearchSheet: View {
             .padding(10)
             .background(.ultraThinMaterial)
             
-            List {
-                ForEach(searchResultFinder.results) { SearchResult in
-                    Button(action: { }) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(SearchResult.title)
-                                .font(.headline)
-                                .fontDesign(.rounded)
-                            Text(SearchResult.subtitle)
+            if isSearchFocused && !searchResultFinder.results.isEmpty {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 2) {
+                        ForEach(searchResultFinder.results){ result in
+                            Button {
+                                
+                            } label: {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text(result.title)
+                                        .foregroundStyle(.primary)
+                                    Text(result.subtitle)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .padding(10)
+                                
+                            }
                         }
                     }
-                    .listRowBackground(Color.clear)
                 }
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-        }
-        .onChange(of: search) {
-            searchResultFinder.update(queryFragment: search)
+            
+            
         }
         .padding(10)
+        .onChange(of: search) { _, newValue in
+            searchResultFinder.update(queryFragment: newValue)
+        }
         .presentationDetents([.height(80), .medium])
         .presentationBackground(.clear)
         .presentationBackgroundInteraction(.enabled(upThrough: .height(80)))
