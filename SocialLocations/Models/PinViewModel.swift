@@ -55,36 +55,24 @@ class PinsViewModel: ObservableObject {
             DispatchQueue.main.async {
                 //<<<<<<< HEAD
                 self.pins = documents.compactMap { doc in
-                    
                     guard let lat = doc["latitude"] as? Double,
                           let lon = doc["longitude"] as? Double,
                           let title = doc["title"] as? String
-                    else {
-                        return nil
-                    }
+                    else { return nil }
+                    let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
                     
-                    //=======
-                    self.pins = documents.map { doc in
-                        
-                        let lat = doc["latitude"] as? Double ?? 0
-                        let lon = doc["longitude"] as? Double ?? 0
-                        let title = doc["title"] as? String ?? ""
-                        let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
-                        
-                        
-                        //>>>>>>> 60427f9f5506af2ff5bfe41576e8b00ecddad684
-                        return Pin(
-                            id: doc.documentID,
-                            coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
-                            name: title,
-                            address: existingAddress,
-                            comment: "",
-                            rating: 0
-                        )
-                    }
+                    return Pin(
+                        id: doc.documentID,
+                        coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
+                        name: title,
+                        address: existingAddress,
+                        comment: doc["comment"] as? String ?? "",
+                        rating: doc["rating"] as? Int ?? 0
+                    )
                 }
             }
         }
+    }
         
         
         // LOOK UP ADDRESS
@@ -110,6 +98,5 @@ class PinsViewModel: ObservableObject {
             }
         }
     }
-}
 
 

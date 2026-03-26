@@ -15,7 +15,7 @@ struct SearchResult: Identifiable {
 
 @Observable
 class SearchResultFinder: NSObject, MKLocalSearchCompleterDelegate {
-    private let completer: MKLocalSearchCompleter
+    private let completer = MKLocalSearchCompleter()
     var results = [SearchResult]()
     
     override init() {
