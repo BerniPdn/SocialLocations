@@ -24,19 +24,7 @@ class PinsViewModel: ObservableObject {
                  comment: String,
                  rating: Int,
                  category: PinCategory,
-                 id: String = UUID().uuidString) async {
-        
-        await MainActor.run {
-            pins.append(Pin(
-                id: id,
-                coordinate: coordinate,
-                name: name,
-                address: nil,
-                comment: comment,
-                rating: rating,
-                category: category
-            ))
-        }
+                 id: String) {
         
         FirestoreManager.shared.addPin(
             id: id,
@@ -73,30 +61,48 @@ class PinsViewModel: ObservableObject {
             }
         }
     }
+    
+    
+    // LOOK UP ADDRESS
+    func lookupAddress(for id: String) async {
+        guard let index = pins.firstIndex(where: { $0.id == id }) else { return }
         
+        let coordinate = pins[index].coordinate
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         
-        // LOOK UP ADDRESS
-        func lookupAddress(for id: String) async {
-            guard let index = pins.firstIndex(where: { $0.id == id }) else { return }
+        guard let request = MKReverseGeocodingRequest(location: location) else {
+            print("Failed to create reverse geocoding request")
+            return
+        }
+        
+        do {
+            let mapItems = try await request.mapItems
             
-            let coordinate = pins[index].coordinate
-            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-            
-            guard let request = MKReverseGeocodingRequest(location: location) else {
-                print("Failed to create reverse geocoding request")
-                return
+            if let first = mapItems.first, let mkAddress = first.address {
+                pins[index].address = mkAddress.shortAddress
             }
-            
-            do {
-                let mapItems = try await request.mapItems
-                
-                if let first = mapItems.first, let mkAddress = first.address {
-                    pins[index].address = mkAddress.shortAddress
-                }
-            } catch {
-                print("Reverse geocoding failed:", error)
-            }
+        } catch {
+            print("Reverse geocoding failed:", error)
         }
     }
+    
+    func addLocalPin(coordinate: CLLocationCoordinate2D, id: String) {
+        pins.append(Pin(
+            id: id,
+            coordinate: coordinate,
+            name: "",
+            address: nil,
+            comment: "",
+            rating: 0,
+            category: .other
+        ))
+    }
+    
+    func removeLocalPin(id: String) {
+        pins.removeAll { $0.id == id }
+    }
+}
+
+
 
 
