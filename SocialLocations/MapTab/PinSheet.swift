@@ -149,8 +149,7 @@ struct PinSheet: View {
         model.pins[index].rating = rating
         model.pins[index].category = category
         
-        Task {
-            await model.savePin(
+        model.savePin(
                 coordinate: currentPin.coordinate,
                 name: name,
                 comment: comment,
@@ -158,7 +157,6 @@ struct PinSheet: View {
                 category: category,
                 id: pinID
             )
-        }
         
         onDismiss()
     }

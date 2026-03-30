@@ -80,20 +80,9 @@ struct MapView: View {
                 guard isPinDroppingActive else { return }
                 if let coordinate = proxy.convert(screenPoint, from: .local) {
                     let tempID = UUID().uuidString
-                    Task {
-                        await pinsModel.savePin(
-                            coordinate: coordinate,
-                            name: "",
-                            comment: "",
-                            rating: 0,
-                            category: .other,
-                            id:tempID)
-                        
-                        await MainActor.run {
-                            pendingPinID = tempID
-                            isPinDroppingActive = false
-                        }
-                    }
+                    pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
+                    pendingPinID = tempID
+                    isPinDroppingActive = false
                 }
             }
             
@@ -102,7 +91,12 @@ struct MapView: View {
             }
             .sheet(isPresented: Binding(
                             get: { pendingPinID != nil },
-                            set: { if !$0 { pendingPinID = nil } }
+                            set: { if !$0 {
+                                if let id = pendingPinID {
+                                    pinsModel.removeLocalPin(id: id) // ← add this
+                                }
+                                pendingPinID = nil
+                            }}
                         )) {
                             if let id = pendingPinID {
                                 PinSheet(pinID: id, onDismiss: {

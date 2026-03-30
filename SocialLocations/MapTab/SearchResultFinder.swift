@@ -15,17 +15,16 @@ struct SearchResult: Identifiable {
 
 @Observable
 class SearchResultFinder: NSObject, MKLocalSearchCompleterDelegate {
-    private let completer: MKLocalSearchCompleter
+    private let completer = MKLocalSearchCompleter()
     var results = [SearchResult]()
     
-    init(completer: MKLocalSearchCompleter) {
-        self.completer = completer
+    override init() {
         super.init()
-        self.completer.delegate = self
+        completer.delegate = self
+        completer.resultTypes = .pointOfInterest
     }
     
     func update(queryFragment: String) {
-        completer.resultTypes = .pointOfInterest
         completer.queryFragment = queryFragment
     }
     
