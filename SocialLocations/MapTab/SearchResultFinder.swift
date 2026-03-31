@@ -7,11 +7,7 @@
 
 import MapKit
 
-struct SearchResult: Identifiable {
-    let id = UUID()
-    let title: String
-    let subtitle: String
-}
+
 
 @Observable
 class SearchResultFinder: NSObject, MKLocalSearchCompleterDelegate {

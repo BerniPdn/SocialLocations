@@ -12,6 +12,7 @@ import MapKit
 //}
 
 struct MapView: View {
+    @State private var searchModel = SearchViewModel()
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
     @State private var isPinDroppingActive: Bool = false
@@ -85,9 +86,19 @@ struct MapView: View {
                     isPinDroppingActive = false
                 }
             }
+            .onChange(of: searchModel.selectedItem) {_, newItem in
+                print("selectedItem changed: \(String(describing: newItem))")
+                guard let newItem else { return }
+                let coordinate = newItem.location.coordinate
+                let tempID = UUID().uuidString
+                pinsModel.addLocalPin(coordinate: coordinate, id: tempID)
+                pendingPinID = tempID
+                isSearchActive = false
+            }
             
             .sheet(isPresented: $isSearchActive) {
                 SearchSheet()
+                    .environment(searchModel)
             }
             .sheet(isPresented: Binding(
                             get: { pendingPinID != nil },
