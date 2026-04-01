@@ -110,7 +110,7 @@ struct MapView: View {
                             }}
                         )) {
                             if let id = pendingPinID {
-                                PinSheet(pinID: id, onDismiss: {
+                                NewPinSheet(pinID: id, onDismiss: {
                                     pendingPinID = nil
                                 })
                                 .environmentObject(pinsModel)
