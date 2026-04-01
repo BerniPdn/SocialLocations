@@ -8,7 +8,7 @@
 import SwiftUI
 import MapKit
 
-struct PinSheet: View {
+struct NewPinSheet: View {
     @EnvironmentObject var model: PinsViewModel
     
     var pinID: String
