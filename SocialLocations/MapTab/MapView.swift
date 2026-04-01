@@ -101,24 +101,24 @@ struct MapView: View {
                     .environment(searchModel)
             }
             .sheet(isPresented: Binding(
-                            get: { pendingPinID != nil },
-                            set: { if !$0 {
-                                if let id = pendingPinID {
-                                    pinsModel.removeLocalPin(id: id) // ← add this
-                                }
-                                pendingPinID = nil
-                            }}
-                        )) {
-                            if let id = pendingPinID {
-                                PinSheet(pinID: id, onDismiss: {
-                                    pendingPinID = nil
-                                })
-                                .environmentObject(pinsModel)
-                            }
-                        }
+                get: { pendingPinID != nil },
+                set: { if !$0 {
+                    if let id = pendingPinID {
+                        pinsModel.removeLocalPin(id: id) // ← add this
                     }
+                    pendingPinID = nil
+                }}
+            )) {
+                if let id = pendingPinID {
+                    PinSheet(pinID: id, onDismiss: {
+                        pendingPinID = nil
+                    })
+                    .environmentObject(pinsModel)
                 }
             }
+        }
+    }
+}
 
 #Preview {
     MapView()

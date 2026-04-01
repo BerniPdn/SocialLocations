@@ -32,7 +32,7 @@ class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
     override init() {
         super.init()
         completer.delegate = self
-        completer.resultTypes = .pointOfInterest
+        completer.resultTypes = [.pointOfInterest, .address]
     }
     
     func updateQuery() {

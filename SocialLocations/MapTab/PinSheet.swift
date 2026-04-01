@@ -14,7 +14,9 @@ struct PinSheet: View {
     var pinID: String
     var onDismiss: () -> Void
     
-    private var pin: Pin? {model.pins.first(where: { $0.id == pinID })}
+    private var pin: Pin? {
+        model.pins.first(where: { $0.id == pinID })
+    }
     
     @State private var name: String = ""
     @State private var rating: Int = 3
