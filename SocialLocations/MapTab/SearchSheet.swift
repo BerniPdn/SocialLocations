@@ -33,7 +33,7 @@ struct SearchSheet: View {
                     }
                 }
             }
-            .padding(10)
+            .padding(5)
             .background(.ultraThinMaterial)
             
             if isSearchFocused && !searchViewModel.autoCompleteResults.isEmpty {
@@ -49,7 +49,7 @@ struct SearchSheet: View {
                                     Text(result.subtitle)
                                         .foregroundStyle(.secondary)
                                 }
-                                .padding(10)
+                                .padding(5)
                                 
                             }
                         }
@@ -59,7 +59,7 @@ struct SearchSheet: View {
             
             
         }
-        .padding(10)
+        .padding(5)
         .padding(.horizontal, 24)
         .presentationDetents([.medium])
         .presentationBackground(.clear)
