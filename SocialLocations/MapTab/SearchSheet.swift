@@ -16,9 +16,9 @@ struct SearchSheet: View {
         @Bindable var searchViewModel = searchViewModel
         VStack(alignment: .leading, spacing: 12) {
             //Search Bar
-            HStack {
+            HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
                 TextField("Search For A Location", text: $searchViewModel.query)
                     .focused($isSearchFocused)
                     .submitLabel(.search)
@@ -60,10 +60,11 @@ struct SearchSheet: View {
             
         }
         .padding(10)
-        .presentationDetents([.height(80), .medium])
+        .padding(.horizontal, 24)
+        .presentationDetents([.medium])
         .presentationBackground(.clear)
         .presentationBackgroundInteraction(.enabled(upThrough: .height(80)))
-        .interactiveDismissDisabled(true)
+        .interactiveDismissDisabled(false)
     }
 
 }
