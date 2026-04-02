@@ -58,6 +58,9 @@ struct MapView: View {
             .overlay(alignment: .topTrailing) {
                 Button {
                     isPinDroppingActive.toggle()
+                    if isSearchActive {
+                        isSearchActive.toggle()
+                    }
                 } label: {
                     Image(systemName: isPinDroppingActive ? "mappin.slash" : "mappin.circle.fill")
                         .padding()
@@ -69,6 +72,9 @@ struct MapView: View {
                 
                 Button {
                     isSearchActive.toggle()
+                    if isPinDroppingActive {
+                        isPinDroppingActive.toggle()
+                    }
                 } label: {
                     Image(systemName: "magnifyingglass.circle")
                         .padding()
@@ -87,7 +93,6 @@ struct MapView: View {
                 }
             }
             .onChange(of: searchModel.selectedItem) {_, newItem in
-                print("selectedItem changed: \(String(describing: newItem))")
                 guard let newItem else { return }
                 let coordinate = newItem.location.coordinate
                 let tempID = UUID().uuidString

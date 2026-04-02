@@ -12,6 +12,10 @@ struct SearchSheet: View {
     @Environment(SearchViewModel.self) private var searchViewModel
     @FocusState private var isSearchFocused: Bool
     
+    private var showingResults: Bool {
+        isSearchFocused && !searchViewModel.autoCompleteResults.isEmpty
+    }
+    
     var body: some View {
         @Bindable var searchViewModel = searchViewModel
         VStack(alignment: .leading, spacing: 12) {
@@ -36,8 +40,9 @@ struct SearchSheet: View {
             .padding(5)
             .background(.ultraThinMaterial)
             
-            if isSearchFocused && !searchViewModel.autoCompleteResults.isEmpty {
-                ScrollView {
+            if showingResults {
+                ScrollView() {
+                    if searchViewModel.mapItems.isEmpty {
                     LazyVStack(alignment: .leading, spacing: 2) {
                         ForEach(searchViewModel.autoCompleteResults){ result in
                             Button {
@@ -49,10 +54,28 @@ struct SearchSheet: View {
                                     Text(result.subtitle)
                                         .foregroundStyle(.secondary)
                                 }
+                            }
                                 .padding(5)
                                 
                             }
                         }
+                    } else {
+                        LazyVStack(alignment: .leading, spacing: 2) {
+                            ForEach(searchViewModel.mapItems){ result in
+                                Button {
+                                    searchViewModel.select(item: result.mapItem)
+                                } label: {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text(result.title)
+                                            .foregroundStyle(.primary)
+                                        Text(result.subtitle)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                    .padding(5)
+                                    
+                                }
+                            }
                     }
                 }
             }
@@ -61,7 +84,7 @@ struct SearchSheet: View {
         }
         .padding(5)
         .padding(.horizontal, 24)
-        .presentationDetents([.medium])
+        .presentationDetents(showingResults ? [.medium] : [.height(80)])
         .presentationBackground(.clear)
         .presentationBackgroundInteraction(.enabled(upThrough: .height(80)))
         .interactiveDismissDisabled(false)

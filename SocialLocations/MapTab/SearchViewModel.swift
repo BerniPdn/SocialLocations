@@ -14,6 +14,13 @@ struct SearchResult: Identifiable {
     let subtitle: String
 }
 
+struct MapItemResult: Identifiable {
+    let id = UUID()
+    let mapItem: MKMapItem
+    var title: String { mapItem.name ?? "Unknown" }
+    var subtitle: String { mapItem.address?.fullAddress ?? ""}
+}
+
 @Observable
 class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
     private let completer = MKLocalSearchCompleter()
@@ -25,7 +32,7 @@ class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
     
     var autoCompleteResults = [SearchResult]()
     
-    var mapItems: [MKMapItem] = []
+    var mapItems: [MapItemResult] = []
     var region: MKCoordinateRegion?
     var selectedItem: MKMapItem?
     
@@ -35,11 +42,14 @@ class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
         completer.resultTypes = [.pointOfInterest, .address]
     }
     
+    
+    
     func updateQuery() {
         if query.isEmpty {
             autoCompleteResults = []
         } else {
             completer.queryFragment = query
+            mapItems = []
         }
     }
     
@@ -61,11 +71,13 @@ class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
         search.start { response, error in
             guard let response else { return }
             Task {@MainActor in
-                self.mapItems = response.mapItems}
+                self.mapItems = response.mapItems.map {MapItemResult(mapItem: $0)}}
         }
     }
     
     func select(item: MKMapItem) {
         selectedItem = item
+        mapItems = []
     }
+    
 }
