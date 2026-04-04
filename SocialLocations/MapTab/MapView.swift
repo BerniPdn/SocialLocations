@@ -15,6 +15,7 @@ struct MapView: View {
     @State private var searchModel = SearchViewModel()
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
+    @State private var selectedPinID: String?
     @State private var isPinDroppingActive: Bool = false
     @State private var isSearchActive: Bool = false
     
@@ -49,6 +50,9 @@ struct MapView: View {
                                 .scaledToFit()
                                 .frame(width: 40, height: 40)
                                 .clipShape(Circle())
+                        }
+                        .onTapGesture{
+                            selectedPinID = pin.id
                         }
                     }
                 }
@@ -106,24 +110,35 @@ struct MapView: View {
                     .environment(searchModel)
             }
             .sheet(isPresented: Binding(
-                            get: { pendingPinID != nil },
-                            set: { if !$0 {
-                                if let id = pendingPinID {
-                                    pinsModel.removeLocalPin(id: id) // ← add this
-                                }
-                                pendingPinID = nil
-                            }}
-                        )) {
-                            if let id = pendingPinID {
-                                NewPinSheet(pinID: id, onDismiss: {
-                                    pendingPinID = nil
-                                })
-                                .environmentObject(pinsModel)
-                            }
-                        }
+                get: { pendingPinID != nil },
+                set: { if !$0 {
+                    if let id = pendingPinID {
+                        pinsModel.removeLocalPin(id: id) // ← add this
                     }
+                    pendingPinID = nil
+                }}
+            )) {
+                if let id = pendingPinID {
+                    NewPinSheet(pinID: id, onDismiss: {
+                        pendingPinID = nil
+                    })
+                    .environmentObject(pinsModel)
                 }
             }
+            .sheet(isPresented: Binding(
+                get: { selectedPinID != nil },
+                set: { if !$0 { selectedPinID = nil } }
+            )) {
+                if let id = selectedPinID {
+                    InformationPinSheet(pinID: id, onDismiss: {
+                        selectedPinID = nil
+                    })
+                    .environmentObject(pinsModel)
+                }
+            }
+        }
+    }
+}
 
 #Preview {
     MapView()
