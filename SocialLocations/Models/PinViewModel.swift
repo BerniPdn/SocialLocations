@@ -100,6 +100,7 @@ class PinsViewModel: ObservableObject {
     func removeLocalPin(id: String) {
         pins.removeAll { $0.id == id }
     }
+    
 }
 
 

@@ -88,12 +88,38 @@ struct InformationPinSheet: View {
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(12)
             }
+            
+            HStack (spacing: 40){
+                Button(action: {
+                    //                saveAndDismiss()
+                }) {
+                    Text("EDIT PIN")
+                }
+                .font(.subheadline.bold())
+                .foregroundColor(.white)
+                .padding(.vertical, 16)
+                .padding(.horizontal, 24)
+                .background(Color.blue)
+                .clipShape(Capsule())
+                
+                Button(action: {
+                    //                saveAndDismiss()
+                }) {
+                    Text("DELETE PIN")
+                }
+                .font(.subheadline.bold())
+                .foregroundColor(.white)
+                .padding(.vertical, 16)
+                .padding(.horizontal, 24)
+                .background(Color.blue)
+                .clipShape(Capsule())
+            }
         }
-        
+
         .task {
             await model.lookupAddress(for: pinID)
         }
-        .dynamicTypeSize(.accessibility1)
+        .dynamicTypeSize(.xxxLarge)
         .padding(.horizontal, 24)
     }
 }
