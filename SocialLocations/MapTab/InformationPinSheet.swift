@@ -114,7 +114,7 @@ struct InformationPinSheet: View {
                 .foregroundColor(.white)
                 .padding(.vertical, 16)
                 .padding(.horizontal, 24)
-                .background(Color.blue)
+                .background(Color.red)
                 .clipShape(Capsule())
             }
         }
@@ -124,12 +124,12 @@ struct InformationPinSheet: View {
         }
         .dynamicTypeSize(.xxxLarge)
         .padding(.horizontal, 24)
-        .sheet(isPresented: $isEditing) {
-            if let pin = pin {
-                EditPinView(pin: pin)
-                    .environmentObject(model)
-            }
-        }
+//        .sheet(isPresented: $isEditing) {
+//            if let pin = pin {
+//                EditPinView(pin: pin)
+//                    .environmentObject(model)
+//            }
+//        }
     }
 }
 
