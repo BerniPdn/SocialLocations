@@ -101,6 +101,18 @@ class PinsViewModel: ObservableObject {
         pins.removeAll { $0.id == id }
     }
     
+    func deletePin(pinID: String) {
+        pins.removeAll { $0.id == pinID }
+
+        Firestore.firestore()
+            .collection("pins")
+            .document(pinID)
+            .delete { error in
+                if let error = error {
+                    print("Error deleting pin: \(error)")
+                }
+            }
+    }
 }
 
 

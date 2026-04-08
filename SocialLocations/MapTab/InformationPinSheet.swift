@@ -103,7 +103,8 @@ struct InformationPinSheet: View {
                 .clipShape(Capsule())
                 
                 Button(action: {
-                    //                saveAndDismiss()
+                    model.deletePin(pinID: pinID)
+                    onDismiss()
                 }) {
                     Text("DELETE PIN")
                 }
