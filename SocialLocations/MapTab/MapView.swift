@@ -16,7 +16,7 @@ struct MapView: View {
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
     @State private var selectedPinID: String?
-    @State private var isPinDroppingActive: Bool = false
+//    @State private var isPinDroppingActive: Bool = false
     @State private var isSearchActive: Bool = false
     
     
@@ -60,24 +60,24 @@ struct MapView: View {
             
             .mapStyle(.standard())
             .overlay(alignment: .topTrailing) {
-                Button {
-                    isPinDroppingActive.toggle()
-                    if isSearchActive {
-                        isSearchActive.toggle()
-                    }
-                } label: {
-                    Image(systemName: isPinDroppingActive ? "mappin.slash" : "mappin.circle.fill")
-                        .padding()
-                        .foregroundStyle(isPinDroppingActive ? .red: .primary)
-                }
-                .buttonStyle(.bordered)
-                .tint(.black)
-                .padding(.top, 175)
+//                Button {
+//                    isPinDroppingActive.toggle()
+//                    if isSearchActive {
+//                        isSearchActive.toggle()
+//                    }
+//                } label: {
+//                    Image(systemName: isPinDroppingActive ? "mappin.slash" : "mappin.circle.fill")
+//                        .padding()
+//                        .foregroundStyle(isPinDroppingActive ? .red: .primary)
+//                }
+//                .buttonStyle(.bordered)
+//                .tint(.black)
+//                .padding(.top, 175)
                 
                 Button {
                     isSearchActive.toggle()
-                    if isPinDroppingActive {
-                        isPinDroppingActive.toggle()
+//                    if isPinDroppingActive {
+//                        isPinDroppingActive.toggle()
                     }
                 } label: {
                     Image(systemName: "magnifyingglass.circle")
@@ -87,15 +87,29 @@ struct MapView: View {
                 .buttonStyle(.bordered)
                 .tint(.black)
             }
-            .onTapGesture { screenPoint in
-                guard isPinDroppingActive else { return }
-                if let coordinate = proxy.convert(screenPoint, from: .local) {
-                    let tempID = UUID().uuidString
-                    pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
-                    pendingPinID = tempID
-                    isPinDroppingActive = false
-                }
-            }
+            .gesture(
+                LongPressGesture(minimumDuration: 1.5)
+                    .simultaneously(with: DragGesture(minimumDistance: 0))
+                    .onEnded { value in
+                        guard isPinDroppingActive else { return }
+                        if let dragValue = value.second,
+                           let coordinate = proxy.convert(dragValue.startLocation, from: .local) {
+                            let tempID = UUID().uuidString
+                            pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
+                            pendingPinID = tempID
+//                            isPinDroppingActive = false
+                        }
+                    }
+            )
+//            .onTapGesture { screenPoint in
+//                guard isPinDroppingActive else { return }
+//                if let coordinate = proxy.convert(screenPoint, from: .local) {
+//                    let tempID = UUID().uuidString
+//                    pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
+//                    pendingPinID = tempID
+//                    isPinDroppingActive = false
+//                }
+//            }
             .onChange(of: searchModel.selectedItem) {_, newItem in
                 guard let newItem else { return }
                 let coordinate = newItem.location.coordinate
