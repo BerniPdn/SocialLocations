@@ -113,6 +113,24 @@ class PinsViewModel: ObservableObject {
                 }
             }
     }
+    
+    func updatePin(pin: Pin) {
+        Firestore.firestore()
+            .collection("pins")
+            .document(pin.id)
+            .setData([
+                "title": pin.name,
+                "comment": pin.comment,
+                "rating": pin.rating,
+                "category": pin.category.rawValue
+            ], merge: true) { error in
+                if let error = error {
+                    print("Error updating pin: \(error)")
+                } else {
+                    print("Pin updated successfully")
+                }
+            }
+    }
 }
 
 

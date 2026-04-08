@@ -8,8 +8,10 @@
 import MapKit
 import SwiftUI
 
+
 struct InformationPinSheet: View {
     @EnvironmentObject var model: PinsViewModel
+    @State private var isEditing = false
     
     var pinID: String
     var onDismiss: () -> Void
@@ -91,7 +93,7 @@ struct InformationPinSheet: View {
             
             HStack (spacing: 40){
                 Button(action: {
-                    //                saveAndDismiss()
+                    isEditing = true
                 }) {
                     Text("EDIT PIN")
                 }
@@ -122,6 +124,12 @@ struct InformationPinSheet: View {
         }
         .dynamicTypeSize(.xxxLarge)
         .padding(.horizontal, 24)
+        .sheet(isPresented: $isEditing) {
+            if let pin = pin {
+                EditPinView(pin: pin)
+                    .environmentObject(model)
+            }
+        }
     }
 }
 
