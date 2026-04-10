@@ -1,14 +1,11 @@
 //
 //  AuthViewModel.swift
 //  SocialLocations
+//  //  Created by Irene Gallini on 4/3/26.
 //
-//  Created by Irene Gallini on 4/3/26.
-//
-
 
 import Foundation
 import FirebaseAuth
-import FirebaseFirestore
 import SwiftUI
 import Combine
 
@@ -19,80 +16,91 @@ class AuthViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage = ""
 
-    private let db = Firestore.firestore()
+    private var authListenerHandle: AuthStateDidChangeListenerHandle?
 
     init() {
         self.user = Auth.auth().currentUser
         
-        Auth.auth().addStateDidChangeListener { [weak self] _, user in
-            self?.user = user
-            if let user = user {
-                Task {
-                    await self?.fetchCurrentUser(uid: user.uid)
+        authListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            DispatchQueue.main.async {
+                self?.user = user
+                
+                if user != nil {
+                    self?.loadCurrentUser()
+                } else {
+                    self?.appUser = nil
                 }
-            } else {
-                self?.appUser = nil
             }
         }
     }
 
-    func signUp(email: String, password: String, username: String, phoneNumber: String) async {
+    func signUp(email: String, password: String, username: String, phoneNumber: String) {
         isLoading = true
         errorMessage = ""
 
-        do {
-            let result = try await Auth.auth().createUser(withEmail: email, password: password)
-            let uid = result.user.uid
-
-            let newUser = AppUser(
-                id: uid,
-                username: username,
-                usernameLower: username.lowercased(),
-                phoneNumber: phoneNumber,
-                profileImageURL: "",
-                email: email,
-                friendIDs: []
-            )
-
-            try db.collection("users").document(uid).setData(from: newUser)
-            self.appUser = newUser
-        } catch {
-            errorMessage = error.localizedDescription
+        AuthManager.shared.signUp(
+            email: email,
+            password: password,
+            username: username,
+            phoneNumber: phoneNumber
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success:
+                    self?.loadCurrentUser()
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
+            }
         }
-
-        isLoading = false
     }
 
-    func signIn(email: String, password: String) async {
+    func signIn(email: String, password: String) {
         isLoading = true
         errorMessage = ""
 
-        do {
-            let result = try await Auth.auth().signIn(withEmail: email, password: password)
-            await fetchCurrentUser(uid: result.user.uid)
-        } catch {
-            errorMessage = error.localizedDescription
+        AuthManager.shared.signIn(email: email, password: password) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success:
+                    self?.loadCurrentUser()
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
+            }
         }
-
-        isLoading = false
     }
 
-    func fetchCurrentUser(uid: String) async {
-        do {
-            let snapshot = try await db.collection("users").document(uid).getDocument()
-            self.appUser = try snapshot.data(as: AppUser.self)
-        } catch {
-            errorMessage = error.localizedDescription
+    func loadCurrentUser() {
+        AuthManager.shared.fetchCurrentAppUser { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let appUser):
+                    self?.appUser = appUser
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
+            }
         }
     }
 
     func signOut() {
         do {
-            try Auth.auth().signOut()
+            try AuthManager.shared.signOut()
             self.user = nil
             self.appUser = nil
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    deinit {
+        if let handle = authListenerHandle {
+            Auth.auth().removeStateDidChangeListener(handle)
         }
     }
 }

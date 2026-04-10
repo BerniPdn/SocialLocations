@@ -5,31 +5,58 @@
 //  Created by Bernarda Perez De Nucci on 3/3/26.
 //
 
+//import SwiftUI
+//import FirebaseCore
+//import FirebaseAuth
+//import FirebaseFirestore
+//
+//
+//class AppDelegate: NSObject, UIApplicationDelegate {
+//  func application(_ application: UIApplication,
+//                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+//    FirebaseApp.configure()
+//    return true	
+//  }
+//}
+//	
+//@main
+//struct SocialLocationsApp: App {
+//    
+//    
+//    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate // Attach Firebase AppDelegate
+//    @StateObject private var authViewModel = AuthViewModel() // Needed for authentication
+//    
+//    var body: some Scene {
+//        WindowGroup {
+//            //MainView()
+//            RootView().environmentObject(authViewModel)
+//        }
+//    }
+//}
 import SwiftUI
 import FirebaseCore
-import FirebaseAuth
-import FirebaseFirestore
-
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-  func application(_ application: UIApplication,
-                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    FirebaseApp.configure()
-    print("Firebase configured successfully!") // CHECK: will print in the terminal when the build can run successfully (no errors left)
-
-    return true	
-  }
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+    ) -> Bool {
+        FirebaseApp.configure()
+        print("Firebase configured successfully!")
+        return true
+    }
 }
-	
+
 @main
 struct SocialLocationsApp: App {
     
-    // Attach Firebase AppDelegate
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var authViewModel = AuthViewModel()
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            RootView()
+                .environmentObject(authViewModel)
         }
     }
 }

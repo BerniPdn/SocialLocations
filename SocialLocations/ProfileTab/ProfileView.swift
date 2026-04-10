@@ -6,13 +6,10 @@
 //
 
 import SwiftUI
-import FirebaseAuth
-
-var userEmail: String {
-    Auth.auth().currentUser?.email ?? "No email"
-}
 
 struct ProfileView: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -23,9 +20,13 @@ struct ProfileView: View {
                     .foregroundColor(.gray)
                     .padding(.top, 40)
                 
-                Text(userEmail)
+                Text(authViewModel.appUser?.username ?? "No Username")
                     .font(.title)
                     .fontWeight(.bold)
+                
+                Text(authViewModel.appUser?.email ?? "No email")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
                 
                 Text("Sharing locations since 2026")
                     .font(.subheadline)
@@ -34,15 +35,18 @@ struct ProfileView: View {
                 Divider()
                     .padding(.horizontal)
                 
-                // Action Buttons
                 VStack(spacing: 15) {
-                    Button(action: {}) {
+                    Button(action: {
+                        // TODO: Edit profile later
+                    }) {
                         Label("Edit Profile", systemImage: "pencil")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
                     
-                    Button(role: .destructive, action: {}) {
+                    Button(role: .destructive, action: {
+                        authViewModel.signOut()
+                    }) {
                         Label("Log Out", systemImage: "arrow.right.square")
                             .frame(maxWidth: .infinity)
                     }

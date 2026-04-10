@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 struct AppUser: Identifiable, Codable {
     @DocumentID var id: String?
+    
     let username: String
     let usernameLower: String
     let phoneNumber: String
