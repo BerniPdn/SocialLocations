@@ -71,7 +71,7 @@ struct MapView: View {
                 .tint(.black)
             }
             .gesture(
-                LongPressGesture(minimumDuration: 1.5)
+                LongPressGesture(minimumDuration: 0.5)
                     .simultaneously(with: DragGesture(minimumDistance: 0))
                     .onEnded { value in
                         if let dragValue = value.second,
