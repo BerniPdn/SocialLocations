@@ -124,12 +124,12 @@ struct InformationPinSheet: View {
         }
         .dynamicTypeSize(.xxxLarge)
         .padding(.horizontal, 24)
-//        .sheet(isPresented: $isEditing) {
-//            if let pin = pin {
-//                EditPinView(pin: pin)
-//                    .environmentObject(model)
-//            }
-//        }
+        .sheet(isPresented: $isEditing) {
+            if let pin = pin {
+                EditPinView(pin: pin)
+                    .environmentObject(model)
+            }
+        }
     }
 }
 
