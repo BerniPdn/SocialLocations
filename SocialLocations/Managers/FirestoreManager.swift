@@ -15,21 +15,21 @@ class FirestoreManager {
 
     // PINS
 
-    func addPin(id: String, latitude: Double, longitude: Double, title: String, comment: String, rating: Int, category: String) {
-//        guard let userId = Auth.auth().currentUser?.uid else {
-//            print("No user logged in")
-//            return
-//        }
+    func addPin(id: String, latitude: Double, longitude: Double, title: String, comment: String, rating: Int, category: String, userId: String) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("No user logged in")
+            return
+        }
 
         db.collection("pins").document(id).setData([
-//            "userId": userId,
+            "userId": userId,
             "latitude": latitude,
             "longitude": longitude,
             "title": title,
             "comment": comment,
             "rating": rating,
             "category": category,
-            "timestamp": Timestamp()
+            "timestamp": Timestamp(),
         ])
         {error in
             if let error = error {

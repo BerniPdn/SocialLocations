@@ -9,10 +9,14 @@ import SwiftUI
 import MapKit
 import FirebaseFirestore
 import Combine
+import FirebaseAuth
 
 class PinsViewModel: ObservableObject {
     
     @Published var pins: [Pin] = []
+    var currentUserId: String {
+        Auth.auth().currentUser?.uid ?? ""
+    }
     
     init() {
         listenToPins()
@@ -26,6 +30,8 @@ class PinsViewModel: ObservableObject {
                  category: PinCategory,
                  id: String) {
         
+        let userId = Auth.auth().currentUser?.uid ?? ""
+        
         FirestoreManager.shared.addPin(
             id: id,
             latitude: coordinate.latitude,
@@ -33,7 +39,8 @@ class PinsViewModel: ObservableObject {
             title: name,
             comment: comment,
             rating: rating,
-            category: category.rawValue
+            category: category.rawValue,
+            userId: userId
         )
     }
     
@@ -54,7 +61,8 @@ class PinsViewModel: ObservableObject {
                         name: title,
                         address: existingAddress,
                         comment: doc["comment"] as? String ?? "",
-                        rating: doc["rating"] as? Int ?? 0
+                        rating: doc["rating"] as? Int ?? 0,
+                        userId: doc["userId"] as? String ?? ""
                     )
                 }
             }
@@ -93,7 +101,8 @@ class PinsViewModel: ObservableObject {
             address: nil,
             comment: "",
             rating: 0,
-            category: .other
+            category: .other,
+            userId: ""
         ))
     }
     

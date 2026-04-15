@@ -28,6 +28,7 @@ struct Pin: Identifiable{
     var comment: String
     var rating: Int
     var category: PinCategory = .other
+    var userId: String
 }
 
 // TODO: move this to it's own PinModel file so it can be used for database too -> cleaner directory
