@@ -25,12 +25,11 @@ struct NewPinSheet: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 25) {
+            VStack(alignment: .leading, spacing: 35) {
                 // HEADING
                 Text("Your newest discovery")
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
-                    .padding(.top, 20)
+                    .font(.system(.title, design: .rounded))
+                    .fontWeight(.semibold)
                 
                 //ADDRESS SECTION
                 VStack(alignment: .leading, spacing: 8) {
@@ -49,29 +48,31 @@ struct NewPinSheet: View {
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(12)
                 }
                 
                 //NAME SECTION
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("NAME")
+                    Label("NAME", systemImage: "signpost.right")
                         .font(.subheadline.bold())
                         .foregroundStyle(.secondary)
                     
                     TextField("How is this place called?", text: $name)
-                        .padding()
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 12)
                         .background(Color(.secondarySystemBackground))
                         .cornerRadius(12)
                         .onChange(of: name) { _, new in
-                            if new.count > 50 { comment = String(new.prefix(50)) }
+                            if new.count > 50 { name = String(new.prefix(50)) }
                         }
                 }
                 //RATING AND CATEGORY SECTIONS
                 HStack (spacing: 20) {
                     VStack(alignment: .leading, spacing: 8){
-                        Text("RATING")
+                        Label("RATING", systemImage: "star.leadinghalf.fill")
                             .font(.subheadline.bold())
                             .foregroundStyle(.secondary)
                         
@@ -86,11 +87,15 @@ struct NewPinSheet: View {
                                     }
                             }
                         }
+                        .padding(.horizontal, 2)
+                        .padding(.vertical, 12)
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(12)
                     }
                     
                     Spacer()
                     VStack(alignment: .leading, spacing: 8){
-                        Text("CATEGORY")
+                        Label("CATEGORY", systemImage: "tag.fill")
                             .font(.subheadline.bold())
                             .foregroundStyle(.secondary)
                         
@@ -101,15 +106,17 @@ struct NewPinSheet: View {
                         }
                         .pickerStyle(.menu)
                         .labelsHidden()
+                        .frame(width: 140)
+                        .padding(.horizontal, 2)
+                        .padding(.vertical, 8)
                         .background(Color(.secondarySystemBackground))
-                        .cornerRadius(8)
+                        .cornerRadius(12)
                     }
                 }
                 
                 //COMMENT SECTION
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("COMMENT")
-                        .font(.subheadline.bold())
+                    Label("COMMENT", systemImage: "message.fill")                        .font(.subheadline.bold())
                         .foregroundStyle(.secondary)
                     
                     TextField("Spill it!", text: $comment, axis: .vertical)
@@ -137,16 +144,13 @@ struct NewPinSheet: View {
                 Button(action: {
                     saveAndDismiss()
                 }) {
-                    Text("SAVE PIN")
-                        .font(.subheadline.bold())
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.blue)
-                        .clipShape(Capsule())
+                    Text("Save")
+                        .frame(maxWidth: .infinity, maxHeight: 40)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.blue)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(12)
                 }
-                .padding(.top, 10)
-                .padding(.bottom, 40)
             }
             .dynamicTypeSize(.xxLarge)
             .padding(.horizontal, 24)

@@ -24,8 +24,8 @@ struct InformationPinSheet: View {
         VStack(alignment: .leading, spacing: 35) {
             // HEADING
             Text(pin?.name ?? "Unknown Place")
-                .font(.system(.largeTitle, design: .rounded))
-                .fontWeight(.bold)
+                .font(.system(.title, design: .rounded))
+                .fontWeight(.semibold)
             
             //ADDRESS SECTION
             VStack(alignment: .leading, spacing: 8) {
@@ -44,19 +44,17 @@ struct InformationPinSheet: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(12)
             }
             
+            Divider()
+            
             //RATING AND CATEGORY SECTIONS
-            HStack (spacing: 8) {
                 VStack(alignment: .leading, spacing: 8){
-                    Text("RATING")
+                    Label("RATING", systemImage: "star.leadinghalf.filled")
                         .font(.subheadline.bold())
                         .foregroundStyle(.secondary)
                     
-                    HStack(spacing:4){
+                    HStack(spacing: 4){
                         ForEach(1...5, id: \.self) { star in
                             Image(systemName: star <= (pin?.rating ?? 0) ? "star.fill" : "star")
                                 .foregroundStyle(.yellow)
@@ -64,58 +62,60 @@ struct InformationPinSheet: View {
                         }
                     }
                 }
-            }
             
+            Divider()
+                
             VStack(alignment: .leading, spacing: 8){
-                Text("CATEGORY")
+                Label("CATEGORY", systemImage: "tag.fill")
                     .font(.subheadline.bold())
                     .foregroundStyle(.secondary)
                 
                 Text(pin?.category.rawValue ?? "")
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(8)
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(Color.blue.opacity(0.1))
+                    .foregroundStyle(.blue)
+                    .clipShape(Capsule())
             }
+            
+            Divider()
             
             //COMMENT SECTION
             VStack(alignment: .leading, spacing: 8) {
-                Text("COMMENT")
+                Label("COMMENT", systemImage: "message.fill")
                     .font(.subheadline.bold())
                     .foregroundStyle(.secondary)
                 
                 Text(pin?.comment ?? "")
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(12)
             }
             
             HStack (spacing: 40){
                 Button(action: {
                     isEditing = true
                 }) {
-                    Text("EDIT PIN")
+                    Label("Edit", systemImage: "pencil")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
                 }
-                .font(.subheadline.bold())
-                .foregroundColor(.white)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
-                .background(Color.blue)
-                .clipShape(Capsule())
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.blue)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(12)
                 
                 Button(action: {
                     model.deletePin(pinID: pinID)
                     onDismiss()
                 }) {
-                    Text("DELETE PIN")
+                    Label("Delete", systemImage: "trash")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
                 }
-                .font(.subheadline.bold())
-                .foregroundColor(.white)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
-                .background(Color.red)
-                .clipShape(Capsule())
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.red)
+                .background(Color.red.opacity(0.1))
+                .cornerRadius(12)
             }
         }
 
@@ -132,4 +132,3 @@ struct InformationPinSheet: View {
         }
     }
 }
-

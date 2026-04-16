@@ -14,7 +14,8 @@ enum PinCategory: String, CaseIterable, Identifiable {
     case nightlife = "Nightlife"
     case nature = "Nature"
     case shopping = "Shopping"
-    case culture = "Culture and Education"
+    case culture = "Culture"
+    case education = "Education"
     case other = "Other"
     
     var id: String { rawValue }
