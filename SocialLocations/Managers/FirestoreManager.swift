@@ -65,6 +65,23 @@ class FirestoreManager {
                 completion(snapshot?.documents ?? [])
             }
     }
+    
+    func updateUserProfile(appUser: AppUser, completion: @escaping (Result<AppUser, Error>) -> Void) {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
+        
+        
+        do {
+            try self.db.collection("users").document(currentUserId).setData(from: appUser) { error in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    completion(.success(appUser))
+                }
+            }
+        } catch {
+            completion(.failure(error))
+        }
+    }
 
     // FRIENDS
 
