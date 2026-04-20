@@ -30,6 +30,6 @@ struct MainView: View {
 }
 
 #Preview {
-    MainView()
+    Text("Preview not supported")
 }
 
