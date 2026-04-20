@@ -19,6 +19,9 @@ class PinsViewModel: ObservableObject {
         Auth.auth().currentUser?.uid ?? ""
     }
     
+    @Published var friendIds: [String] = []
+    @Published var selectedUserIds: Set<String> = [] // This will show all friends initially
+    
     init() {
         listenToPins()
     }
@@ -118,7 +121,7 @@ class PinsViewModel: ObservableObject {
     
     func deletePin(pinID: String) {
         pins.removeAll { $0.id == pinID }
-
+        
         Firestore.firestore()
             .collection("pins")
             .document(pinID)
@@ -146,8 +149,23 @@ class PinsViewModel: ObservableObject {
                 }
             }
     }
+    
+    // FUNCTIONS TO FILTER PINS
+    func listenToFriends() {
+        FirestoreManager.shared.listenToFriends { friendIds in
+            DispatchQueue.main.async {
+                self.friendIds = friendIds
+            }
+        }
+    }
+    
+    var filteredPins: [Pin] {
+        if selectedUserIds.isEmpty {
+            return pins
+        }
+        return pins.filter { selectedUserIds.contains($0.userId) }
+    }
 }
-
 
 
 

@@ -17,9 +17,10 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                Text("SocialLocations")
-                    .font(.largeTitle)
+                Text("PinPals")
+                    .font(.system(size: 70))
                     .fontWeight(.bold)
+                
                 
                 TextField("Email", text: $email)
                     .textFieldStyle(.roundedBorder)
@@ -31,13 +32,22 @@ struct LoginView: View {
                 
                 Button("Log In") {
                     authViewModel.signIn(email: email, password: password)
+                    
                 }
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: 40)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.blue)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(12)
                 
                 Button("Create Account") {
                     showSignUp = true
                 }
+                .frame(maxWidth: .infinity, maxHeight: 40)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.blue)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(12)
                 
                 if authViewModel.isLoading {
                     ProgressView()
