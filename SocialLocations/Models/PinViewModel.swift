@@ -10,7 +10,7 @@ import MapKit
 import FirebaseFirestore
 import FirebaseAuth
 import Combine
-import FirebaseAuth
+
 
 class PinsViewModel: ObservableObject {
     
@@ -46,9 +46,7 @@ class PinsViewModel: ObservableObject {
             comment: comment,
             rating: rating,
             category: category.rawValue,
-            userId: userId
             userId: uid  // Connects to authenticated user
-
         )
     }
     
@@ -110,8 +108,7 @@ class PinsViewModel: ObservableObject {
             comment: "",
             rating: 0,
             category: .other,
-            userId: ""
-            userId: String
+            userId: "",
         ))
     }
     
