@@ -18,6 +18,6 @@ struct RootView: View {
                 LoginView()
             }
         }
-       MainView()
+       //MainView()
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct FriendsView: View {
     
     @StateObject private var viewModel = FriendsViewModel()
+    @State private var showSearch = false
 
     var body: some View {
         NavigationStack {
@@ -40,6 +41,9 @@ struct FriendsView: View {
                 }) {
                     Image(systemName: "person.badge.plus")
                 }
+            }
+            .navigationDestination(isPresented: $showSearch) {
+                SearchFriendsView(viewModel: viewModel)
             }
         }
     }
