@@ -8,6 +8,7 @@
 import SwiftUI
 import MapKit
 import FirebaseFirestore
+import FirebaseAuth
 import Combine
 import FirebaseAuth
 
@@ -32,6 +33,11 @@ class PinsViewModel: ObservableObject {
         
         let userId = Auth.auth().currentUser?.uid ?? ""
         
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("No authenticated user")
+            return
+        }
+
         FirestoreManager.shared.addPin(
             id: id,
             latitude: coordinate.latitude,
@@ -41,6 +47,8 @@ class PinsViewModel: ObservableObject {
             rating: rating,
             category: category.rawValue,
             userId: userId
+            userId: uid  // Connects to authenticated user
+
         )
     }
     
@@ -103,6 +111,7 @@ class PinsViewModel: ObservableObject {
             rating: 0,
             category: .other,
             userId: ""
+            userId: String
         ))
     }
     
