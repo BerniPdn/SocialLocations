@@ -28,7 +28,6 @@ struct FriendsView: View {
                     Spacer()
                     
                     Button("View") {
-                        // TODO: Show friend's pins on map
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
@@ -37,14 +36,16 @@ struct FriendsView: View {
             }
             .navigationTitle("Friends")
             .toolbar {
-                Button(action: { 
-                }) {
-                    Image(systemName: "person.badge.plus")
-                }
-            }
+                            Button {
+                                showSearch = true
+                            } label: {
+                                Image(systemName: "person.badge.plus")
+                            }
+                        }
+
             .navigationDestination(isPresented: $showSearch) {
-                SearchFriendsView(viewModel: viewModel)
-            }
+                            SearchFriendsView(viewModel: viewModel)
+                        }
         }
     }
 }

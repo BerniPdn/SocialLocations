@@ -17,6 +17,8 @@ class FriendsViewModel: ObservableObject {
     @Published var friends: [AppUser] = []
     @Published var searchResults: [AppUser] = []
     @Published var incomingRequests: [FriendRequest] = []
+    
+    @Published var isLoading = false
 
     private let db = Firestore.firestore()
 
@@ -59,6 +61,8 @@ class FriendsViewModel: ObservableObject {
             return
         }
 
+        isLoading = true
+        
         do {
             let snapshot = try await db.collection("users")
                 .whereField("usernameLower", isGreaterThanOrEqualTo: username.lowercased())
@@ -74,6 +78,8 @@ class FriendsViewModel: ObservableObject {
         } catch {
             print("Error searching users: \(error)")
         }
+        
+        isLoading = false
     }
 
     func sendFriendRequest(to user: AppUser) async {
