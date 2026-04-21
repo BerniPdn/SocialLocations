@@ -37,7 +37,7 @@ struct FriendsView: View {
             }
             .navigationTitle("Friends")
             .toolbar {
-                Button(action: { // TODO: Navigate to search friends view
+                Button(action: { 
                 }) {
                     Image(systemName: "person.badge.plus")
                 }
