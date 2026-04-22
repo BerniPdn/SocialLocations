@@ -22,6 +22,8 @@ struct SignUpView: View {
             VStack(spacing: 20) {
                 TextField("Username", text: $username)
                     .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
                 
                 TextField("Phone Number", text: $phoneNumber)
                     .textFieldStyle(.roundedBorder)
@@ -36,6 +38,11 @@ struct SignUpView: View {
                     .textFieldStyle(.roundedBorder)
                 
                 Button("Sign Up") {
+                    let cleanUsername = username
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                        .lowercased()
+                    let cleanPhone = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
                     authViewModel.signUp(
                         email: email,
                         password: password,

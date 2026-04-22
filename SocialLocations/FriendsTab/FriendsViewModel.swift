@@ -43,43 +43,87 @@ class FriendsViewModel: ObservableObject {
                 return
             }
 
-            let snapshots = try await db.collection("users")
-                .whereField(FieldPath.documentID(), in: ids)
-                .getDocuments()
+//            let snapshots = try await db.collection("users")
+//                .whereField(FieldPath.documentID(), in: ids)
+//                .getDocuments()
+            var allUsers: [AppUser] = []
 
-            self.friends = try snapshots.documents.compactMap {
-                try $0.data(as: AppUser.self)
+            let chunks = stride(from: 0, to: ids.count, by: 10).map {
+                Array(ids[$0..<min($0 + 10, ids.count)])
             }
+
+            for chunk in chunks {
+                let snapshot = try await db.collection("users")
+                    .whereField(FieldPath.documentID(), in: chunk)
+                    .getDocuments()
+
+                let users = try snapshot.documents.compactMap {
+                    try $0.data(as: AppUser.self)
+                }
+
+                allUsers.append(contentsOf: users)
+            }
+
+            self.friends = allUsers
+            
         } catch {
             print("Error fetching friends: \(error)")
         }
     }
 
-    func searchUsers(by username: String) async {
-        guard !username.isEmpty else {
+    func searchUsers(by text: String) async {
+        guard !text.isEmpty else {
             searchResults = []
             return
         }
 
         isLoading = true
-        
+
         do {
-            let snapshot = try await db.collection("users")
-                .whereField("usernameLower", isGreaterThanOrEqualTo: username.lowercased())
-                .whereField("usernameLower", isLessThanOrEqualTo: username.lowercased() + "\u{f8ff}")
-                .getDocuments()
+            let queryText = text.lowercased()
+            
+            // CAREFUL : Firebase mismatch
+            let usernameQuery = db.collection("users")
+                .whereField("username", isGreaterThanOrEqualTo: queryText)
+                .whereField("username", isLessThanOrEqualTo: queryText + "\u{f8ff}")
+
+            let phoneQuery = db.collection("users")
+                .whereField("phoneNumber", isGreaterThanOrEqualTo: text)
+                .whereField("phoneNumber", isLessThanOrEqualTo: text + "\u{f8ff}")
+
+            async let usernameSnapshot = usernameQuery.getDocuments()
+            async let phoneSnapshot = phoneQuery.getDocuments()
+
+            let (uSnap, pSnap) = try await (usernameSnapshot, phoneSnapshot)
 
             let currentUID = Auth.auth().currentUser?.uid
 
-            self.searchResults = try snapshot.documents.compactMap {
-                let user = try $0.data(as: AppUser.self)
-                return user.id == currentUID ? nil : user
+            let users = (uSnap.documents + pSnap.documents).compactMap {
+                try? $0.data(as: AppUser.self)
             }
+
+            // remove duplicates + self
+            let unique = Dictionary(grouping: users, by: { $0.id })
+                .compactMap { $0.value.first }
+                .filter { user in
+                    guard let id = user.id else { return false }
+                    return id != currentUID && !friendIDs.contains(id)
+                }
+
+            self.searchResults = unique
+
         } catch {
-            print("Error searching users: \(error)")
+            print("Search error:", error)
         }
         
+        // DEBUGGING
+//        print("QUERY:", text)
+//
+//        print("USERNAME SNAP:", uSnap.documents.map { $0.data() })
+//        print("PHONE SNAP:", pSnap.documents.map { $0.data() })
+
         isLoading = false
+
     }
 
     func sendFriendRequest(to user: AppUser) async {
@@ -88,12 +132,16 @@ class FriendsViewModel: ObservableObject {
 
         do {
             let existing = try await db.collection("friend_requests")
-                .whereField("fromUserId", isEqualTo: currentUID)
-                .whereField("toUserId", isEqualTo: targetUID)
-                .whereField("status", isEqualTo: "pending")
+                .whereField("fromUserId", in: [currentUID, targetUID])
+                .whereField("toUserId", in: [currentUID, targetUID])
                 .getDocuments()
 
-            if !existing.documents.isEmpty { return }
+            if existing.documents.contains(where: {
+                let data = $0.data()
+                return data["status"] as? String == "pending" || data["status"] as? String == "accepted"
+            }) {
+                return
+            }
 
             let request = FriendRequest(
                 fromUserId: currentUID,
@@ -106,6 +154,7 @@ class FriendsViewModel: ObservableObject {
         } catch {
             print("Error sending friend request: \(error)")
         }
+        self.searchResults.removeAll { $0.id == targetUID }
     }
 
     func fetchIncomingRequests() async {
@@ -123,6 +172,7 @@ class FriendsViewModel: ObservableObject {
         } catch {
             print("Error fetching requests: \(error)")
         }
+        await loadRequestUsers()
     }
 
     func acceptRequest(_ request: FriendRequest) async {
@@ -169,6 +219,27 @@ class FriendsViewModel: ObservableObject {
             await fetchIncomingRequests()
         } catch {
             print("Error rejecting request: \(error)")
+        }
+    }
+    
+    func loadRequestUsers() async {
+        let ids = incomingRequests.map { $0.fromUserId }
+
+        guard !ids.isEmpty else { return }
+
+        do {
+            let snapshot = try await db.collection("users")
+                .whereField(FieldPath.documentID(), in: ids)
+                .getDocuments()
+
+            for doc in snapshot.documents {
+                let user = try doc.data(as: AppUser.self)
+                if let id = user.id {
+                    requestUsers[id] = user
+                }
+            }
+        } catch {
+            print("Error loading request users")
         }
     }
 }
