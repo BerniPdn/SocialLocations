@@ -17,8 +17,8 @@ class FriendsViewModel: ObservableObject {
     @Published var friends: [AppUser] = []
     @Published var searchResults: [AppUser] = []
     @Published var incomingRequests: [FriendRequest] = []
-    
     @Published var isLoading = false
+    @Published var requestUsers: [String: AppUser] = [:]
 
     private let db = Firestore.firestore()
 
