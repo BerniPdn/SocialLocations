@@ -12,7 +12,7 @@
 //    @State private var searchText = ""
 //    @State private var showSearch = false
 //
-//    var body: some View {
+//    var body: some View
 //        Group {
 //            if searchText.isEmpty {
 //                ContentUnavailableView(

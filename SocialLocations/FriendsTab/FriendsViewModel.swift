@@ -78,39 +78,57 @@ class FriendsViewModel: ObservableObject {
         }
 
         isLoading = true
+        defer { isLoading = false }
 
         do {
             let queryText = text.lowercased()
             
-            // CAREFUL : Firebase mismatch
-            let usernameQuery = db.collection("users")
-                .whereField("username", isGreaterThanOrEqualTo: queryText)
-                .whereField("username", isLessThanOrEqualTo: queryText + "\u{f8ff}")
-
-            let phoneQuery = db.collection("users")
-                .whereField("phoneNumber", isGreaterThanOrEqualTo: text)
-                .whereField("phoneNumber", isLessThanOrEqualTo: text + "\u{f8ff}")
-
-            async let usernameSnapshot = usernameQuery.getDocuments()
-            async let phoneSnapshot = phoneQuery.getDocuments()
-
-            let (uSnap, pSnap) = try await (usernameSnapshot, phoneSnapshot)
-
+            let snapshot = try await db.collection("users")
+                        .whereField("username", isGreaterThanOrEqualTo: queryText)
+                        .whereField("username", isLessThanOrEqualTo: queryText + "\u{f8ff}")
+                        .getDocuments()
+            
             let currentUID = Auth.auth().currentUser?.uid
 
-            let users = (uSnap.documents + pSnap.documents).compactMap {
+            let users = snapshot.documents.compactMap {
                 try? $0.data(as: AppUser.self)
             }
+            
+            self.searchResults = users.filter { user in
+                        guard let id = user.id else { return false }
+                        return id != currentUID && !friendIDs.contains(id)
+                    }
+            
+            
+            // CAREFUL : Firebase mismatch
+//            let usernameQuery = db.collection("users")
+//                .whereField("username", isGreaterThanOrEqualTo: queryText)
+//                .whereField("username", isLessThanOrEqualTo: queryText + "\u{f8ff}")
+//
+//            let phoneQuery = db.collection("users")
+//                .whereField("phoneNumber", isGreaterThanOrEqualTo: text)
+//                .whereField("phoneNumber", isLessThanOrEqualTo: text + "\u{f8ff}")
 
-            // remove duplicates + self
-            let unique = Dictionary(grouping: users, by: { $0.id })
-                .compactMap { $0.value.first }
-                .filter { user in
-                    guard let id = user.id else { return false }
-                    return id != currentUID && !friendIDs.contains(id)
-                }
-
-            self.searchResults = unique
+//            async let usernameSnapshot = usernameQuery.getDocuments()
+//            async let phoneSnapshot = phoneQuery.getDocuments()
+//
+//            let (uSnap, pSnap) = try await (usernameSnapshot, phoneSnapshot)
+//
+//            let currentUID = Auth.auth().currentUser?.uid
+//
+//            let users = (uSnap.documents + pSnap.documents).compactMap {
+//                try? $0.data(as: AppUser.self)
+//            }
+//
+//            // remove duplicates + self
+//            let unique = Dictionary(grouping: users, by: { $0.id })
+//                .compactMap { $0.value.first }
+//                .filter { user in
+//                    guard let id = user.id else { return false }
+//                    return id != currentUID && !friendIDs.contains(id)
+//                }
+//
+//            self.searchResults = unique
 
         } catch {
             print("Search error:", error)
@@ -122,7 +140,7 @@ class FriendsViewModel: ObservableObject {
 //        print("USERNAME SNAP:", uSnap.documents.map { $0.data() })
 //        print("PHONE SNAP:", pSnap.documents.map { $0.data() })
 
-        isLoading = false
+//        isLoading = false
 
     }
 

@@ -11,6 +11,7 @@ struct FriendsView: View {
     
     @StateObject private var viewModel = FriendsViewModel()
     @State private var searchText = ""
+    @State private var searchTask: Task<Void, Never>? = nil
 
     var body: some View {
         NavigationStack {
@@ -59,9 +60,12 @@ struct FriendsView: View {
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled(true)
             .onChange(of: searchText) { _, newValue in
-                Task {
-                    await viewModel.searchUsers(by: newValue)
-                }
+                searchTask?.cancel()
+
+                    searchTask = Task {
+                        try? await Task.sleep(nanoseconds: 300_000_000)
+                        await viewModel.searchUsers(by: newValue)
+                    }
             }
             .navigationTitle("Friends")
         }
