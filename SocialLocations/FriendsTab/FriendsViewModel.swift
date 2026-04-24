@@ -82,11 +82,11 @@ class FriendsViewModel: ObservableObject {
 
         do {
             let queryText = text.lowercased()
-            
+
             let snapshot = try await db.collection("users")
-                        .whereField("username", isGreaterThanOrEqualTo: queryText)
-                        .whereField("username", isLessThanOrEqualTo: queryText + "\u{f8ff}")
-                        .getDocuments()
+                .whereField("usernameLower", isGreaterThanOrEqualTo: queryText)
+                .whereField("usernameLower", isLessThanOrEqualTo: queryText + "\u{f8ff}")
+                .getDocuments()
             
             let currentUID = Auth.auth().currentUser?.uid
 
