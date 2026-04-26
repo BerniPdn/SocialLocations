@@ -8,7 +8,6 @@
 import MapKit
 import SwiftUI
 
-
 struct InformationPinSheet: View {
     @EnvironmentObject var model: PinsViewModel
     @State private var isEditing = false
@@ -21,34 +20,42 @@ struct InformationPinSheet: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 35) {
-            // HEADING
-            Text(pin?.name ?? "Unknown Place")
-                .font(.system(.title, design: .rounded))
-                .fontWeight(.semibold)
+        ZStack {
+            AppBackground()
             
-            //ADDRESS SECTION
-            VStack(alignment: .leading, spacing: 8) {
-                Label("LOCATION", systemImage: "mappin.and.ellipse")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 35) {
+                // HEADING
+                Text("Pin Details")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundStyle(Color.textSub)
+                    .tracking(0.8)
                 
-                HStack {
-                    if let address = pin?.address {
-                        Text(address)
-                            .font(.callout)
-                    } else {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                        Text("Locating...").font(.caption).italic()
+                Text(pin?.name ?? "Unknown Place")
+                    .font(.system(size: 48, weight: .black, design: .rounded))
+                    .foregroundStyle(Color.appGreen)
+                
+                //ADDRESS SECTION
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("LOCATION", systemImage: "mappin.and.ellipse")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.secondary)
+                    
+                    HStack {
+                        if let address = pin?.address {
+                            Text(address)
+                                .font(.callout)
+                        } else {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Locating...").font(.caption).italic()
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            
-            Divider()
-            
-            //RATING AND CATEGORY SECTIONS
+                
+                Divider()
+                
+                //RATING AND CATEGORY SECTIONS
                 VStack(alignment: .leading, spacing: 8){
                     Label("RATING", systemImage: "star.leadinghalf.filled")
                         .font(.subheadline.bold())
@@ -62,72 +69,74 @@ struct InformationPinSheet: View {
                         }
                     }
                 }
-            
-            Divider()
                 
-            VStack(alignment: .leading, spacing: 8){
-                Label("CATEGORY", systemImage: "tag.fill")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.secondary)
+                Divider()
                 
-                Text(pin?.category.rawValue ?? "")
-                    .font(.caption.weight(.semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.blue.opacity(0.1))
+                VStack(alignment: .leading, spacing: 8){
+                    Label("CATEGORY", systemImage: "tag.fill")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.secondary)
+                    
+                    Text(pin?.category.rawValue ?? "")
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.blue.opacity(0.1))
+                        .foregroundStyle(.blue)
+                        .clipShape(Capsule())
+                }
+                
+                Divider()
+                
+                //COMMENT SECTION
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("COMMENT", systemImage: "message.fill")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.secondary)
+                    
+                    Text(pin?.comment ?? "")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                //BUTTONS
+                HStack (spacing: 40){
+                    Button(action: {
+                        isEditing = true
+                    }) {
+                        Label("Edit", systemImage: "pencil")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 13)
+                    }
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.blue)
-                    .clipShape(Capsule())
-            }
-            
-            Divider()
-            
-            //COMMENT SECTION
-            VStack(alignment: .leading, spacing: 8) {
-                Label("COMMENT", systemImage: "message.fill")
-                    .font(.subheadline.bold())
-                    .foregroundStyle(.secondary)
-                
-                Text(pin?.comment ?? "")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            
-            HStack (spacing: 40){
-                Button(action: {
-                    isEditing = true
-                }) {
-                    Label("Edit", systemImage: "pencil")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 13)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(12)
+                    
+                    Button(action: {
+                        model.deletePin(pinID: pinID)
+                        onDismiss()
+                    }) {
+                        Label("Delete", systemImage: "trash")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 13)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.red)
+                    .background(Color.red.opacity(0.1))
+                    .cornerRadius(12)
                 }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.blue)
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(12)
-                
-                Button(action: {
-                    model.deletePin(pinID: pinID)
-                    onDismiss()
-                }) {
-                    Label("Delete", systemImage: "trash")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 13)
-                }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.red)
-                .background(Color.red.opacity(0.1))
-                .cornerRadius(12)
             }
-        }
-
-        .task {
-            await model.lookupAddress(for: pinID)
-        }
-        .dynamicTypeSize(.xxxLarge)
-        .padding(.horizontal, 24)
-        .sheet(isPresented: $isEditing) {
-            if let pin = pin {
-                EditPinView(pin: pin)
-                    .environmentObject(model)
+            
+            .task {
+                await model.lookupAddress(for: pinID)
+            }
+            .dynamicTypeSize(.xxxLarge)
+            .padding(.horizontal, 24)
+            .sheet(isPresented: $isEditing) {
+                if let pin = pin {
+                    EditPinView(pin: pin)
+                        .environmentObject(model)
+                }
             }
         }
     }
