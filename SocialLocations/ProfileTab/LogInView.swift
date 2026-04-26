@@ -28,7 +28,6 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             ZStack{
-                
                 LinearGradient(
                     colors: [
                         Color(Color.backgroundMain),
