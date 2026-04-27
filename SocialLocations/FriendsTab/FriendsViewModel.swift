@@ -11,9 +11,10 @@ import FirebaseFirestore
 import FirebaseAuth
 import Combine
 
+/// Data used by FriendsView.
+///
 @MainActor
 class FriendsViewModel: ObservableObject {
-    @Published var friendIDs: [String] = []
     @Published var friends: [AppUser] = []
     @Published var searchResults: [AppUser] = []
     @Published var incomingRequests: [FriendRequest] = []
@@ -95,9 +96,9 @@ class FriendsViewModel: ObservableObject {
             }
             
             self.searchResults = users.filter { user in
-                        guard let id = user.id else { return false }
-                        return id != currentUID && !friendIDs.contains(id)
-                    }
+                guard let id = user.id else { return false }
+                return id != currentUID && !friendIDs.contains(id)
+            }
             
             
             // CAREFUL : Firebase mismatch
