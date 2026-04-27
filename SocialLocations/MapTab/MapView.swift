@@ -12,6 +12,10 @@ import MapKit
 //}
 
 struct MapView: View {
+
+    var friendUserId: String? = nil //optional friends filter
+    var friendUsername: String? = nil
+    
     @State private var searchModel = SearchViewModel()
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
