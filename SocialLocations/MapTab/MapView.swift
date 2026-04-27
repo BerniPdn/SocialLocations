@@ -16,7 +16,7 @@ struct MapView: View {
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
     @State private var selectedPinID: String?
-    @State private var isSearchActive: Bool = false
+//    @State private var isSearchActive: Bool = false
     
     
     @State private var position = MapCameraPosition.region(
@@ -58,18 +58,34 @@ struct MapView: View {
             }
             
             .mapStyle(.standard())
-            .overlay(alignment: .topTrailing) {
-                
-                Button {
-                    isSearchActive.toggle()
-                } label: {
-                    Image(systemName: "magnifyingglass.circle")
-                        .padding()
-                        .foregroundStyle(isSearchActive ? .red: .primary)
-                }
-                .buttonStyle(.bordered)
-                .tint(.black)
+            
+//            .overlay(alignment: .topTrailing) {
+//                
+//                Button {
+//                    isSearchActive.toggle()
+//                } label: {
+//                    Image(systemName: "magnifyingglass.circle")
+//                        .padding()
+//                        .foregroundStyle(isSearchActive ? .red: .primary)
+//                }
+//                .buttonStyle(.bordered)
+//                .tint(.black)
+//            }
+            
+            .overlay(alignment: .top) {
+            VStack(spacing: 0) {
+                SearchSheet()
+                    .environment(searchModel)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                Spacer()
             }
+            .padding(.top, 40) // pushes below status bar
+        }
+            
             .gesture(
                 LongPressGesture(minimumDuration: 0.5)
                     .simultaneously(with: DragGesture(minimumDistance: 0))
@@ -89,13 +105,15 @@ struct MapView: View {
                 let tempID = UUID().uuidString
                 pinsModel.addLocalPin(coordinate: coordinate, id: tempID)
                 pendingPinID = tempID
-                isSearchActive = false
+//                isSearchActive = false
             }
             
-            .sheet(isPresented: $isSearchActive) {
-                SearchSheet()
-                    .environment(searchModel)
-            }
+            
+//            .sheet(isPresented: $isSearchActive) {
+//                SearchSheet()
+//                    .environment(searchModel)
+//            }
+            
             .sheet(isPresented: Binding(
                 get: { pendingPinID != nil },
                 set: { if !$0 {
