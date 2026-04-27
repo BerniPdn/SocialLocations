@@ -37,7 +37,7 @@ class FriendsViewModel: ObservableObject {
             let userDoc = try await db.collection("users").document(uid).getDocument()
             let currentUser = try userDoc.data(as: AppUser.self)
             let ids = currentUser.friendIDs
-            self.friendIDs = ids
+            //self.friendIDs = ids
 
             if ids.isEmpty {
                 self.friends = []
@@ -97,7 +97,8 @@ class FriendsViewModel: ObservableObject {
             
             self.searchResults = users.filter { user in
                 guard let id = user.id else { return false }
-                return id != currentUID && !friendIDs.contains(id)
+                //return id != currentUID && !friendIDs.contains(id)
+                return id != currentUID && !friends.contains(where: { $0.id == id })
             }
             
             
