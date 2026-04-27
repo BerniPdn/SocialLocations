@@ -43,7 +43,7 @@ class FriendsViewModel: ObservableObject {
                 self.friends = []
                 return
             }
-
+//
 //            let snapshots = try await db.collection("users")
 //                .whereField(FieldPath.documentID(), in: ids)
 //                .getDocuments()
