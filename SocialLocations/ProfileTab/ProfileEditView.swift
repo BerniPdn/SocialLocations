@@ -35,6 +35,8 @@ struct ProfileEditView: View {
                     }
                     
                 }
+                Text("Tap Icon To Edit Profile Picture")
+                    .padding(10)
                 TextField("Username", text: $username)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal)
