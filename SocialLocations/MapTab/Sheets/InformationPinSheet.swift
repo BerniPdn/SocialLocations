@@ -66,7 +66,7 @@ struct InformationPinSheet: View {
                     Text(pin?.category.rawValue ?? "")
                         .sheetCapsuleStyle()
                 }
-                
+
                 //COMMENT SECTION
                 VStack(alignment: .leading, spacing: 8) {
                     Label("COMMENT", systemImage: "message.fill")
@@ -104,6 +104,8 @@ struct InformationPinSheet: View {
             }
             .dynamicTypeSize(.xxxLarge)
             .padding(.horizontal, 24)
+            .padding(.vertical, 5)
+    
             .sheet(isPresented: $isEditing) {
                 if let pin = pin {
                     EditPinView(pin: pin)

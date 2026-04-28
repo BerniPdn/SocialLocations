@@ -129,6 +129,7 @@ struct NewPinSheet: View {
                 }
                 .dynamicTypeSize(.xxLarge)
                 .padding(.horizontal, 24)
+                .padding(.vertical, 15)
                 
             }
         }
