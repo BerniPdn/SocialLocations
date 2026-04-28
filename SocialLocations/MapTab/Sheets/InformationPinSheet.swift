@@ -23,9 +23,9 @@ struct InformationPinSheet: View {
         ZStack {
             AppBackground()
             
-            VStack(alignment: .leading, spacing: 35) {
+            VStack(alignment: .leading, spacing: 29) {
                 // HEADING
-                Text(pin?.name ?? "Unknown Place")
+                Text(pin?.name.isEmpty == false ? pin!.name : "Unknown Place")
                     .sheetTitleStyle()
                 
                 //ADDRESS SECTION
@@ -46,7 +46,9 @@ struct InformationPinSheet: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                //RATING AND CATEGORY SECTIONS
+                Divider()
+                
+                //RATING AND CATEGORY SECTION
                 VStack(alignment: .leading, spacing: 8){
                     Label("RATING", systemImage: "star.leadinghalf.filled")
                         .sheetSubtitleStyle()
@@ -59,6 +61,8 @@ struct InformationPinSheet: View {
                     }
                 }
                 
+                Divider()
+                
                 VStack(alignment: .leading, spacing: 8){
                     Label("CATEGORY", systemImage: "tag.fill")
                         .sheetSubtitleStyle()
@@ -66,6 +70,8 @@ struct InformationPinSheet: View {
                     Text(pin?.category.rawValue ?? "")
                         .sheetCapsuleStyle()
                 }
+                
+                Divider()
 
                 //COMMENT SECTION
                 VStack(alignment: .leading, spacing: 8) {
@@ -102,10 +108,10 @@ struct InformationPinSheet: View {
             .task {
                 await model.lookupAddress(for: pinID)
             }
-            .dynamicTypeSize(.xxxLarge)
+            .dynamicTypeSize(.xxLarge)
             .padding(.horizontal, 24)
-            .padding(.vertical, 5)
-    
+            .padding(.vertical, 15)
+
             .sheet(isPresented: $isEditing) {
                 if let pin = pin {
                     EditPinView(pin: pin)

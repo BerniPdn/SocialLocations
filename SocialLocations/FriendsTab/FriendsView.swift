@@ -135,15 +135,25 @@ struct FriendsView: View {
             
             Spacer()
             
-            Button {
-                Task {
-                    await viewModel.sendFriendRequest(to: user)}
-            } label : {
-                Label ("Add Friend", systemImage: "plus")
+            if viewModel.sentRequestUserIds.contains(user.id!) {
+                Text("Request Sent")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.textSub)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.textSub.opacity(0.1))
+                
+            } else {
+                Button {
+                    Task {
+                        await viewModel.sendFriendRequest(to: user)}
+                } label : {
+                    Label ("Add Friend", systemImage: "plus")
+                }
+                .buttonStyle(FriendOptionButtonStyle())
+                
             }
         }
-        .buttonStyle(FriendOptionButtonStyle())
-        
     }
 }
 

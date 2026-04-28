@@ -25,7 +25,7 @@ struct LogSignTextFieldStyle: ViewModifier {
 struct SheetTitleStyle:  ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(.system(size: 38, weight: .black, design: .rounded))
+            .font(.system(size: 45, weight: .black, design: .rounded))
             .foregroundStyle(Color.textTitles)
     }
 }
@@ -41,7 +41,7 @@ struct SheetSubtitleStyle: ViewModifier {
 struct SheetTextStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .font(.system(size: 21))
+            .font(.system(size: 23))
             .foregroundStyle(Color.textMain)
             
     }

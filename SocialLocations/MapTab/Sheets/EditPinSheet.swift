@@ -20,7 +20,7 @@ struct EditPinView: View {
             VStack(alignment: .leading, spacing: 35) {
                 
                 // HEADING
-                Text("Edit Your Existing Pin")
+                Text("Edit Your Pin")
                     .sheetTitleStyle()
                 
                 //Display Location - you can't edit this

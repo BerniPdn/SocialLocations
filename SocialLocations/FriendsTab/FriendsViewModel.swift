@@ -20,6 +20,7 @@ class FriendsViewModel: ObservableObject {
     @Published var incomingRequests: [FriendRequest] = []
     @Published var isLoading = false
     @Published var requestUsers: [String: AppUser] = [:]
+    @Published var sentRequestUserIds: Set<String> = []
     
 
     private let db = Firestore.firestore()
@@ -29,6 +30,7 @@ class FriendsViewModel: ObservableObject {
     init() {
         listenForIncomingRequests()
         listenForFriends()
+        listenToSentRequests()
     }
     
     nonisolated deinit {
@@ -56,6 +58,21 @@ class FriendsViewModel: ObservableObject {
                     }
                 }
         }
+    
+    func listenToSentRequests() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        Firestore.firestore()
+            .collection("friend_requests")
+            .whereField("fromUserId", isEqualTo: userId)
+            .whereField("status", isEqualTo: "pending")
+            .addSnapshotListener { snapshot, _ in
+                let ids = snapshot?.documents.compactMap { $0["toUserId"] as? String } ?? []
+                DispatchQueue.main.async {
+                    self.sentRequestUserIds = Set(ids)
+                }
+            }
+    }
     
     func listenForFriends() {
             guard let uid = Auth.auth().currentUser?.uid else { return }

@@ -30,7 +30,7 @@ struct NewPinSheet: View {
                 
                 VStack(alignment: .leading, spacing: 35) {
                     // HEADING
-                    Text("Your newest discovery")
+                    Text("Add a Pin!")
                         .sheetTitleStyle()
                     
                     //ADDRESS SECTION
