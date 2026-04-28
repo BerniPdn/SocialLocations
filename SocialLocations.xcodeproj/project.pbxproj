@@ -37,9 +37,22 @@
 		C3F67CC42F579BFA00B9A5CE /* SocialLocationsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SocialLocationsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5462C0092FA14A8900454EC1 /* Exceptions for "SocialLocations" folder in "SocialLocations" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C3F67CAC2F579BF800B9A5CE /* SocialLocations */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C3F67CAF2F579BF800B9A5CE /* SocialLocations */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5462C0092FA14A8900454EC1 /* Exceptions for "SocialLocations" folder in "SocialLocations" target */,
+			);
 			path = SocialLocations;
 			sourceTree = "<group>";
 		};
@@ -425,6 +438,8 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SocialLocations/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Choose a Profile Picture From Your Photo Library";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -457,6 +472,8 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SocialLocations/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Choose a Profile Picture From Your Photo Library";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

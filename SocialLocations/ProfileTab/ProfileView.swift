@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @State private var isEditShowing = false
     
     var body: some View {
         NavigationStack {
@@ -37,7 +38,8 @@ struct ProfileView: View {
                 
                 VStack(spacing: 15) {
                     Button(action: {
-                        // TODO: Edit profile later
+                        isEditShowing = true
+                        
                     }) {
                         Label("Edit Profile", systemImage: "pencil")
                             .frame(maxWidth: .infinity)
@@ -58,5 +60,9 @@ struct ProfileView: View {
             }
             .navigationTitle("Your Profile")
         }
+        .sheet(isPresented: $isEditShowing) {
+            ProfileEditView()
+                .environmentObject(authViewModel)
     }
+        }
 }

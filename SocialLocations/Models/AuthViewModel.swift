@@ -74,6 +74,34 @@ class AuthViewModel: ObservableObject {
             }
         }
     }
+    
+    func updateProfile(username: String, phoneNumber: String) {
+        isLoading = true
+        errorMessage = ""
+        guard let current = appUser else { return }
+
+        let updated = AppUser(
+            id: current.id,
+            username: username,
+            usernameLower: username.lowercased(),
+            phoneNumber: phoneNumber,
+            profileImageURL: current.profileImageURL,
+            email: current.email,
+            friendIDs: current.friendIDs
+        )
+        
+        FirestoreManager.shared.updateUserProfile(appUser: updated) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success:
+                    self?.loadCurrentUser()
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                }
+            }}
+    }
 
     func loadCurrentUser() {
         AuthManager.shared.fetchCurrentAppUser { [weak self] result in
