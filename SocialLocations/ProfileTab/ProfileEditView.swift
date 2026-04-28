@@ -10,6 +10,7 @@ import PhotosUI
 
 struct ProfileEditView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @Environment(\.dismiss) var dismiss
     
     @State private var phoneNumber: String = ""
     @State private var username: String = ""
@@ -35,9 +36,17 @@ struct ProfileEditView: View {
                     
                 }
                 TextField("Username", text: $username)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal)
                 TextField("Phone Number", text: $phoneNumber)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal)
                 Button {
-                    authViewModel.updateProfile(username: username, phoneNumber: phoneNumber)
+                    authViewModel.updateProfile(username: username, phoneNumber: phoneNumber) {success in
+                        if success {
+                            dismiss()
+                        }}
+                    
                 } label: {
                     Text("Confirm Profile Changes")
                     
