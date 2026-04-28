@@ -9,11 +9,11 @@ import SwiftUI
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .bold, design: .rounded))
+            .font(.system(size: 20, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
-            .background(Color.appGreen.opacity(configuration.isPressed ? 0.4 : 0.9))
+            .background(Color.appGreen.opacity(configuration.isPressed ? 0.4 : 0.8))
             .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
@@ -21,7 +21,7 @@ struct PrimaryButtonStyle: ButtonStyle {
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .bold, design: .rounded))
+            .font(.system(size: 20, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
@@ -33,11 +33,43 @@ struct SecondaryButtonStyle: ButtonStyle {
 struct DestructiveButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .bold, design: .rounded))
+            .font(.system(size: 20, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
-            .background(Color.appRed.opacity(configuration.isPressed ? 0.4 : 0.9))
+            .background(Color.appRed.opacity(configuration.isPressed ? 0.4 : 0.8))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+struct FriendAcceptButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 20, design: .rounded))
+            .foregroundStyle(.white)
+            .frame(width: 36, height: 36)
+            .background(Color.appGreen.opacity(configuration.isPressed ? 0.4 : 0.8))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+struct FriendDestructiveButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 20, design: .rounded))
+            .foregroundStyle(.white)
+            .frame(width: 36, height: 36)
+            .background(Color.appRed.opacity(configuration.isPressed ? 0.4 : 0.8))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+struct FriendOptionButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 20, design: .rounded))
+            .foregroundStyle(.white)
+            .frame(width: 145, height: 35)
+            .background(Color.appGreen.opacity(configuration.isPressed ? 0.4 : 0.8))
             .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }

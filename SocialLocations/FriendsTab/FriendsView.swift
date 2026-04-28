@@ -12,7 +12,7 @@ struct FriendsView: View {
     @StateObject private var viewModel = FriendsViewModel()
     @State private var searchText = ""
     @State private var searchTask: Task<Void, Never>? = nil
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -83,70 +83,67 @@ struct FriendsView: View {
             Image(systemName: "person.circle.fill")
                 .resizable()
                 .frame(width: 40, height: 40)
-
+            
             Text(user.username)
-
+            
             Spacer()
-
+            
             Button {
                 // show their pins
             } label : {
                 Label ("View Pins", systemImage: "mappin")
             }
-            .frame(width: 140, height: 10)
-            .buttonStyle(PrimaryButtonStyle())
+            .buttonStyle(FriendOptionButtonStyle())
         }
     }
-
-
+    
+    
     @ViewBuilder
     private func requestRow(_ request: FriendRequest, viewModel: FriendsViewModel) -> some View {
-        HStack {
+        HStack (spacing: 3){
             Text(viewModel.requestUsers[request.fromUserId]?.username ?? "Loading...")
             
             Spacer()
-
+            
             Button {
                 Task { await viewModel.acceptRequest(request) }
             } label: {
-                Label("Accept", systemImage: "checkmark")
+                Image (systemName: "checkmark")
             }
-            .buttonStyle(PrimaryButtonStyle())
-            .frame(width: 80, height: 10)
-
+            .buttonStyle(FriendAcceptButtonStyle())
+            
             Button {
                 Task { await viewModel.rejectRequest(request) }
             } label : {
-                Label("Reject", systemImage : "xmark")
+                Image (systemName: "xmark")
             }
-            .frame(width: 80, height: 10)
-            .buttonStyle(DestructiveButtonStyle())
-            .frame(width: 80, height: 10)
+            .buttonStyle(FriendDestructiveButtonStyle())
         }
     }
-
+    
     @ViewBuilder
     private func userRow(_ user: AppUser) -> some View {
         HStack {
             Image(systemName: "person.circle.fill")
                 .resizable()
                 .frame(width: 40, height: 40)
-
+            
             VStack(alignment: .leading) {
                 Text(user.username)
                 Text(user.email).font(.caption)
             }
-
+            
             Spacer()
-
-            Button("Add") {
+            
+            Button {
                 Task {
-                    await viewModel.sendFriendRequest(to: user)
-                }
+                    await viewModel.sendFriendRequest(to: user)}
+            } label : {
+                Label ("Add Friend", systemImage: "plus")
             }
-            .frame(width: 80, height: 10)
-            .buttonStyle(PrimaryButtonStyle())
         }
+        .buttonStyle(FriendOptionButtonStyle())
+        
     }
 }
 
