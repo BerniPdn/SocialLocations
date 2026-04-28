@@ -1,101 +1,105 @@
+////
+////  SheetView.swift
+////  SocialLocations
+////
+////  Created by Silas Revenaugh on 3/9/26.
+////
 //
-//  SheetView.swift
-//  SocialLocations
+//import MapKit
+//import SwiftUI
 //
-//  Created by Silas Revenaugh on 3/9/26.
-//
-
-import MapKit
-import SwiftUI
-
-struct SearchSheet: View {
-    @Environment(SearchViewModel.self) private var searchViewModel
-    //@FocusState private var isSearchFocused: Bool
-    
-    private var showingResults: Bool {
-        //isSearchFocused && !searchViewModel.autoCompleteResults.isEmpty
-        !searchViewModel.autoCompleteResults.isEmpty || !searchViewModel.mapItems.isEmpty
-    }
-    
-    var body: some View {
-        @Bindable var searchViewModel = searchViewModel
-        ZStack {
-            AppBackground()
-            
-            VStack(alignment: .leading, spacing: 12) {
-                //Search Bar
-//                HStack(alignment: .top, spacing: 12) {
-//                    Image(systemName: "magnifyingglass")
-//                        .foregroundStyle(.primary)
-//                    TextField("Search For A Location", text: $searchViewModel.query)
-//                        .focused($isSearchFocused)
-//                        .submitLabel(.search)
-//                    
-//                    if !searchViewModel.query.isEmpty {
-//                        Button {
-//                            searchViewModel.query = ""
-//                            isSearchFocused = false
-//                        } label: {
-//                            Image(systemName: "xmark.circle.fill")
-//                                .foregroundStyle(.secondary)
+//struct SearchSheet: View {
+//    @Environment(SearchViewModel.self) private var searchViewModel
+//    //@FocusState private var isSearchFocused: Bool
+//    
+//    private var showingResults: Bool {
+//        //isSearchFocused && !searchViewModel.autoCompleteResults.isEmpty
+//        !searchViewModel.autoCompleteResults.isEmpty || !searchViewModel.mapItems.isEmpty
+//    }
+//    
+//    var body: some View {
+//        @Bindable var searchViewModel = searchViewModel
+//        ZStack {
+//            AppBackground()
+//            
+//            VStack(alignment: .leading, spacing: 12) {
+//                //Search Bar
+////                HStack(alignment: .top, spacing: 12) {
+////                    Image(systemName: "magnifyingglass")
+////                        .foregroundStyle(.primary)
+////                    TextField("Search For A Location", text: $searchViewModel.query)
+////                        .focused($isSearchFocused)
+////                        .submitLabel(.search)
+////                    
+////                    if !searchViewModel.query.isEmpty {
+////                        Button {
+////                            searchViewModel.query = ""
+////                            isSearchFocused = false
+////                        } label: {
+////                            Image(systemName: "xmark.circle.fill")
+////                                .foregroundStyle(.secondary)
+////                        }
+////                    }
+////                }
+////                Text("Search Results")
+////                    .font(.headline)
+////                    .padding(.bottom, 4)
+////                .padding(5)
+////                .background(.ultraThinMaterial)
+//                
+//                if showingResults {
+//                    ScrollView() {
+//                        if searchViewModel.mapItems.isEmpty {
+//                            LazyVStack(alignment: .leading, spacing: 2) {
+//                                ForEach(searchViewModel.autoCompleteResults){ result in
+//                                    Button {
+//                                        searchViewModel.search(for: result.title)
+//                                    } label: {
+//                                        VStack(alignment: .leading, spacing: 0) {
+//                                            Text(result.title)
+//                                                .foregroundStyle(.primary)
+//                                            Text(result.subtitle)
+//                                                .foregroundStyle(.secondary)
+//                                        }
+//                                    }
+//                                    .padding(5)
+//                                    
+//                                }
+//                            }
+//                        } else {
+//                            LazyVStack(alignment: .leading, spacing: 2) {
+//                                ForEach(searchViewModel.mapItems){ result in
+//                                    Button {
+//                                        searchViewModel.select(item: result.mapItem)
+//                                    } label: {
+//                                        VStack(alignment: .leading, spacing: 0) {
+//                                            Text(result.title)
+//                                                .foregroundStyle(.primary)
+//                                            Text(result.subtitle)
+//                                                .foregroundStyle(.secondary)
+//                                        }
+//                                    }
+//                                    .padding(5)
+//                                    
+//                                }
+//                            }
 //                        }
 //                    }
 //                }
-                Text("Search Results")
-                    .font(.headline)
-                    .padding(.bottom, 4)
-                .padding(5)
-                .background(.ultraThinMaterial)
-                
-                if showingResults {
-                    ScrollView() {
-                        if searchViewModel.mapItems.isEmpty {
-                            LazyVStack(alignment: .leading, spacing: 2) {
-                                ForEach(searchViewModel.autoCompleteResults){ result in
-                                    Button {
-                                        searchViewModel.search(for: result.title)
-                                    } label: {
-                                        VStack(alignment: .leading, spacing: 0) {
-                                            Text(result.title)
-                                                .foregroundStyle(.primary)
-                                            Text(result.subtitle)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                    .padding(5)
-                                    
-                                }
-                            }
-                        } else {
-                            LazyVStack(alignment: .leading, spacing: 2) {
-                                ForEach(searchViewModel.mapItems){ result in
-                                    Button {
-                                        searchViewModel.select(item: result.mapItem)
-                                    } label: {
-                                        VStack(alignment: .leading, spacing: 0) {
-                                            Text(result.title)
-                                                .foregroundStyle(.primary)
-                                            Text(result.subtitle)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                    .padding(5)
-                                    
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                
-            }
-            .padding(5)
-            .padding(.horizontal, 24)
-            .presentationDetents(showingResults ? [.medium] : [.height(80)])
-            .presentationBackground(.clear)
-            .presentationBackgroundInteraction(.enabled(upThrough: .height(80)))
-            .interactiveDismissDisabled(false)
-        }
-        
-    }
-}
+//                
+//                
+//            }
+//            .padding(5)
+//            .padding(.horizontal, 16)
+//            .frame(maxHeight: .infinity, alignment: .top)
+////            .padding(.horizontal, 24)
+//            //.presentationDetents(showingResults ? [.medium] : [.height(80)])
+//            .presentationDetents(showingResults ? [.medium] : [.height(0)]) // 0 is the top of the page
+//            .presentationBackground(.clear)
+////            .presentationBackgroundInteraction(.enabled(upThrough: .height(80)))
+//            .presentationBackgroundInteraction(.enabled(upThrough: .height(0)))
+//            .interactiveDismissDisabled(false)
+//        }
+//        
+//    }
+//}

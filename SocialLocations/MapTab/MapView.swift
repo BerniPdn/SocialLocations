@@ -20,7 +20,7 @@ struct MapView: View {
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
     @State private var selectedPinID: String?
-    @State private var isSearchActive: Bool = false
+//    @State private var isSearchActive: Bool = false
     @FocusState private var isSearchFieldFocused: Bool
     
     
@@ -62,6 +62,7 @@ struct MapView: View {
             
             .mapStyle(.standard())
             .overlay(alignment: .top) { // inline search bar
+                VStack(spacing: 0) {
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
@@ -71,6 +72,8 @@ struct MapView: View {
                     if !searchModel.query.isEmpty {
                         Button {
                             searchModel.query = ""
+//                            isSearchActive = false
+                            isSearchFieldFocused = false
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundStyle(.secondary)
@@ -80,6 +83,55 @@ struct MapView: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    // Dropdown results
+                    if isSearchFieldFocused && (!searchModel.autoCompleteResults.isEmpty || !searchModel.mapItems.isEmpty) {
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: 0) {
+                                if searchModel.mapItems.isEmpty {
+                                    ForEach(searchModel.autoCompleteResults) { result in
+                                        Button {
+                                            searchModel.search(for: result.title)
+                                        } label: {
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(result.title)
+                                                    .foregroundStyle(.primary)
+                                                Text(result.subtitle)
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                            }
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 8)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
+                                        Divider().padding(.leading, 12)
+                                    }
+                                } else {
+                                    ForEach(searchModel.mapItems) { result in
+                                        Button {
+                                            searchModel.select(item: result.mapItem)
+                                            isSearchFieldFocused = false
+                                        } label: {
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(result.title)
+                                                    .foregroundStyle(.primary)
+                                                Text(result.subtitle)
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                            }
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 8)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
+                                        Divider().padding(.leading, 12)
+                                    }
+                                }
+                            }
+                        }
+                        .frame(maxHeight: 300)
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                        .padding(.top, 4)
+                    }
+                }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
             }
@@ -97,9 +149,9 @@ struct MapView: View {
 //                .tint(.black)
 //            }
             
-            .onChange(of: isSearchFieldFocused) { _, focused in
-                if focused { isSearchActive = true }
-            }
+//            .onChange(of: isSearchFieldFocused) { _, focused in
+//                if focused { isSearchActive = true }
+//            }
             .gesture(
                 LongPressGesture(minimumDuration: 0.5)
                     .simultaneously(with: DragGesture(minimumDistance: 0))
@@ -119,13 +171,14 @@ struct MapView: View {
                 let tempID = UUID().uuidString
                 pinsModel.addLocalPin(coordinate: coordinate, id: tempID)
                 pendingPinID = tempID
-                isSearchActive = false
+//                isSearchActive = false
+                isSearchFieldFocused = false
             }
             
-            .sheet(isPresented: $isSearchActive) {
-                SearchSheet()
-                    .environment(searchModel)
-            }
+//            .sheet(isPresented: $isSearchActive) {
+//                SearchSheet()
+//                    .environment(searchModel)
+//            }
             .sheet(isPresented: Binding(
                 get: { pendingPinID != nil },
                 set: { if !$0 {
@@ -157,6 +210,6 @@ struct MapView: View {
     }
 }
 
-#Preview {
-    MapView()
-}
+//#Preview {
+//    MapView()
+//}
