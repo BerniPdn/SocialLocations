@@ -134,6 +134,7 @@ struct MapView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
+                .tint(.appDarkGreen)
             }
 
 //            .overlay(alignment: .top) {

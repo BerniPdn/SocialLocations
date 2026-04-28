@@ -42,8 +42,6 @@ class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
         completer.resultTypes = [.pointOfInterest, .address]
     }
     
-    
-    
     func updateQuery() {
         if query.isEmpty {
             autoCompleteResults = []

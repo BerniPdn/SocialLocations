@@ -25,25 +25,18 @@ struct InformationPinSheet: View {
             
             VStack(alignment: .leading, spacing: 35) {
                 // HEADING
-                Text("Pin Details")
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Color.textSub)
-                    .tracking(0.8)
-                
                 Text(pin?.name ?? "Unknown Place")
-                    .font(.system(size: 48, weight: .black, design: .rounded))
-                    .foregroundStyle(Color.appGreen)
+                    .sheetTitleStyle()
                 
                 //ADDRESS SECTION
                 VStack(alignment: .leading, spacing: 8) {
                     Label("LOCATION", systemImage: "mappin.and.ellipse")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .sheetSubtitleStyle()
                     
                     HStack {
                         if let address = pin?.address {
                             Text(address)
-                                .font(.callout)
+                                .sheetTextStyle()
                         } else {
                             ProgressView()
                                 .scaleEffect(0.8)
@@ -53,49 +46,34 @@ struct InformationPinSheet: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                Divider()
-                
                 //RATING AND CATEGORY SECTIONS
                 VStack(alignment: .leading, spacing: 8){
                     Label("RATING", systemImage: "star.leadinghalf.filled")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .sheetSubtitleStyle()
                     
                     HStack(spacing: 4){
                         ForEach(1...5, id: \.self) { star in
                             Image(systemName: star <= (pin?.rating ?? 0) ? "star.fill" : "star")
-                                .foregroundStyle(.yellow)
-                                .font(.title3)
+                                .sheetStarStyle()
                         }
                     }
                 }
                 
-                Divider()
-                
                 VStack(alignment: .leading, spacing: 8){
                     Label("CATEGORY", systemImage: "tag.fill")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .sheetSubtitleStyle()
                     
                     Text(pin?.category.rawValue ?? "")
-                        .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(Color.blue.opacity(0.1))
-                        .foregroundStyle(.blue)
-                        .clipShape(Capsule())
+                        .sheetCapsuleStyle()
                 }
-                
-                Divider()
                 
                 //COMMENT SECTION
                 VStack(alignment: .leading, spacing: 8) {
                     Label("COMMENT", systemImage: "message.fill")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .sheetSubtitleStyle()
                     
                     Text(pin?.comment ?? "")
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .sheetTextStyle()
                 }
                 
                 //BUTTONS
@@ -107,23 +85,17 @@ struct InformationPinSheet: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 13)
                     }
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.blue)
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(12)
+                    .buttonStyle(PrimaryButtonStyle())
                     
                     Button(action: {
                         model.deletePin(pinID: pinID)
                         onDismiss()
                     }) {
-                        Label("Delete", systemImage: "trash")
+                        Label("Delete", systemImage: "mappin.slash")
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 13)
                     }
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.red)
-                    .background(Color.red.opacity(0.1))
-                    .cornerRadius(12)
+                    .buttonStyle(DestructiveButtonStyle())
                 }
             }
             
