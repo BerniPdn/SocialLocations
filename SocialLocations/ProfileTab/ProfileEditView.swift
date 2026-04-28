@@ -21,7 +21,6 @@ struct ProfileEditView: View {
         NavigationStack{
             ZStack{
                 AppBackground()
-                
                 VStack(spacing: 20) {
                     PhotosPicker(selection: $selectedItem, matching: .images) {
                         if let selectedPhoto = selectedImage {
