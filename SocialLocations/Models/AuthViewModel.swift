@@ -75,7 +75,7 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    func updateProfile(username: String, phoneNumber: String) {
+    func updateProfile(username: String, phoneNumber: String, completion: @escaping (Bool) -> Void) {
         isLoading = true
         errorMessage = ""
         guard let current = appUser else { return }
@@ -97,8 +97,10 @@ class AuthViewModel: ObservableObject {
                 switch result {
                 case .success:
                     self?.loadCurrentUser()
+                    completion(true)
                 case .failure(let error):
                     self?.errorMessage = error.localizedDescription
+                    completion(false)
                 }
             }}
     }
