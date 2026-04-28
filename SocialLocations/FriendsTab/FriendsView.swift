@@ -111,8 +111,8 @@ struct FriendsView: View {
             } label: {
                 Label("Accept", systemImage: "checkmark")
             }
-            .frame(width: 80, height: 10)
             .buttonStyle(PrimaryButtonStyle())
+            .frame(width: 80, height: 10)
 
             Button {
                 Task { await viewModel.rejectRequest(request) }
@@ -121,6 +121,7 @@ struct FriendsView: View {
             }
             .frame(width: 80, height: 10)
             .buttonStyle(DestructiveButtonStyle())
+            .frame(width: 80, height: 10)
         }
     }
 

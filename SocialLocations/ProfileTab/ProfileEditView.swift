@@ -39,11 +39,10 @@ struct ProfileEditView: View {
                         
                     }
                     TextField("Username", text: $username)
-                        .textFieldStyle(.roundedBorder)
-                        .padding(.horizontal)
+                        .sheetTextFieldStyle()
                     TextField("Phone Number", text: $phoneNumber)
-                        .textFieldStyle(.roundedBorder)
-                        .padding(.horizontal)
+                        .sheetTextFieldStyle()
+
                     Button {
                         authViewModel.updateProfile(username: username, phoneNumber: phoneNumber) {success in
                             if success {
@@ -52,9 +51,9 @@ struct ProfileEditView: View {
                         
                     } label: {
                         Text("Confirm Profile Changes")
-                        
                     }
                     .buttonStyle(PrimaryButtonStyle())
+                    .frame(maxWidth: .infinity)
                 }
                 .navigationTitle("Edit Profile")
                 .onAppear {
@@ -69,6 +68,8 @@ struct ProfileEditView: View {
                     }
                     
                 }
+                .dynamicTypeSize(.xxxLarge)
+                .padding(.horizontal, 24)
             }
         }
     }
