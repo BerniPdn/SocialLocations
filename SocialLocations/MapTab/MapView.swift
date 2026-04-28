@@ -21,6 +21,7 @@ struct MapView: View {
     @State private var pendingPinID: String?
     @State private var selectedPinID: String?
     @State private var isSearchActive: Bool = false
+    @FocusState private var isSearchFieldFocused: Bool
     
     
     @State private var position = MapCameraPosition.region(
@@ -35,8 +36,6 @@ struct MapView: View {
     var body: some View {
         MapReader { proxy in
             Map(position: $position) {
-                
-                
                 ForEach(FixedLocations.all, id: \.name) { location in
                     Annotation(location.name, coordinate: location.coordinate) {
                         Image(location.imageName)
@@ -62,17 +61,44 @@ struct MapView: View {
             }
             
             .mapStyle(.standard())
-            .overlay(alignment: .topTrailing) {
-                
-                Button {
-                    isSearchActive.toggle()
-                } label: {
-                    Image(systemName: "magnifyingglass.circle")
-                        .padding()
-                        .foregroundStyle(isSearchActive ? .red: .primary)
+            .overlay(alignment: .top) { // inline search bar
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    TextField("Search For A Location", text: $searchModel.query)
+//                        .onTapGesture { isSearchActive = true }
+                        .focused($isSearchFieldFocused)
+                    if !searchModel.query.isEmpty {
+                        Button {
+                            searchModel.query = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
-                .buttonStyle(.bordered)
-                .tint(.black)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+            }
+
+//            .overlay(alignment: .top) {
+//                
+//                Button {
+//                    isSearchActive.toggle()
+//                } label: {
+//                    Image(systemName: "magnifyingglass.circle")
+//                        .padding()
+//                        .foregroundStyle(isSearchActive ? .red: .primary)
+//                }
+//                .buttonStyle(.bordered)
+//                .tint(.black)
+//            }
+            
+            .onChange(of: isSearchFieldFocused) { _, focused in
+                if focused { isSearchActive = true }
             }
             .gesture(
                 LongPressGesture(minimumDuration: 0.5)
@@ -104,7 +130,7 @@ struct MapView: View {
                 get: { pendingPinID != nil },
                 set: { if !$0 {
                     if let id = pendingPinID {
-                        pinsModel.removeLocalPin(id: id) // ← add this
+                        pinsModel.removeLocalPin(id: id)
                     }
                     pendingPinID = nil
                 }}

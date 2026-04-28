@@ -10,10 +10,11 @@ import SwiftUI
 
 struct SearchSheet: View {
     @Environment(SearchViewModel.self) private var searchViewModel
-    @FocusState private var isSearchFocused: Bool
+    //@FocusState private var isSearchFocused: Bool
     
     private var showingResults: Bool {
-        isSearchFocused && !searchViewModel.autoCompleteResults.isEmpty
+        //isSearchFocused && !searchViewModel.autoCompleteResults.isEmpty
+        !searchViewModel.autoCompleteResults.isEmpty || !searchViewModel.mapItems.isEmpty
     }
     
     var body: some View {
@@ -23,23 +24,26 @@ struct SearchSheet: View {
             
             VStack(alignment: .leading, spacing: 12) {
                 //Search Bar
-                HStack(alignment: .top, spacing: 12) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundStyle(.primary)
-                    TextField("Search For A Location", text: $searchViewModel.query)
-                        .focused($isSearchFocused)
-                        .submitLabel(.search)
-                    
-                    if !searchViewModel.query.isEmpty {
-                        Button {
-                            searchViewModel.query = ""
-                            isSearchFocused = false
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
+//                HStack(alignment: .top, spacing: 12) {
+//                    Image(systemName: "magnifyingglass")
+//                        .foregroundStyle(.primary)
+//                    TextField("Search For A Location", text: $searchViewModel.query)
+//                        .focused($isSearchFocused)
+//                        .submitLabel(.search)
+//                    
+//                    if !searchViewModel.query.isEmpty {
+//                        Button {
+//                            searchViewModel.query = ""
+//                            isSearchFocused = false
+//                        } label: {
+//                            Image(systemName: "xmark.circle.fill")
+//                                .foregroundStyle(.secondary)
+//                        }
+//                    }
+//                }
+                Text("Search Results")
+                    .font(.headline)
+                    .padding(.bottom, 4)
                 .padding(5)
                 .background(.ultraThinMaterial)
                 
