@@ -15,59 +15,63 @@ struct FriendsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-
-                // Search Results
-                if !searchText.isEmpty {
-                    Section("Search Results") {
-                        if viewModel.isLoading {
-                            ProgressView()
-                        } else if viewModel.searchResults.isEmpty {
-                            Text("No users found")
-                                .foregroundColor(.secondary)
-                        } else {
-                            ForEach(viewModel.searchResults) { user in
-                                userRow(user)
+            ZStack {
+                AppBackground()
+                
+                List {
+                    // Search Results
+                    if !searchText.isEmpty {
+                        Section("Search Results") {
+                            if viewModel.isLoading {
+                                ProgressView()
+                            } else if viewModel.searchResults.isEmpty {
+                                Text("No users found")
+                                    .foregroundColor(.secondary)
+                            } else {
+                                ForEach(viewModel.searchResults) { user in
+                                    userRow(user)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Friend Requests
+                    if searchText.isEmpty && !viewModel.incomingRequests.isEmpty {
+                        Section("Friend Requests") {
+                            ForEach(viewModel.incomingRequests) { request in
+                                requestRow(request, viewModel: viewModel)
+                            }
+                        }
+                    }
+                    
+                    // FriendsList
+                    if searchText.isEmpty {
+                        Section("Friends") {
+                            if viewModel.friends.isEmpty {
+                                Text("No friends yet")
+                                    .foregroundColor(.secondary)
+                            } else {
+                                ForEach(viewModel.friends) { friend in
+                                    friendRow(friend)
+                                }
                             }
                         }
                     }
                 }
-
-                // Friend Requests
-                if searchText.isEmpty && !viewModel.incomingRequests.isEmpty {
-                    Section("Friend Requests") {
-                        ForEach(viewModel.incomingRequests) { request in
-                            requestRow(request, viewModel: viewModel)
-                        }
-                    }
-                }
-
-                // FriendsList
-                if searchText.isEmpty {
-                    Section("Friends") {
-                        if viewModel.friends.isEmpty {
-                            Text("No friends yet")
-                                .foregroundColor(.secondary)
-                        } else {
-                            ForEach(viewModel.friends) { friend in
-                                friendRow(friend)
-                            }
-                        }
-                    }
-                }
+                .scrollContentBackground(.hidden)
             }
             .searchable(text: $searchText, prompt: "Search by username or phone number")
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled(true)
             .onChange(of: searchText) { _, newValue in
                 searchTask?.cancel()
-
-                    searchTask = Task {
-                        try? await Task.sleep(nanoseconds: 300_000_000)
-                        await viewModel.searchUsers(by: newValue)
-//                Task{
-//                await viewModel.searchUsers(by: newValue)
-                    }
+                
+                searchTask = Task {
+                    try? await Task.sleep(nanoseconds: 300_000_000)
+                    await viewModel.searchUsers(by: newValue)
+                    //                Task{
+                    //                await viewModel.searchUsers(by: newValue)
+                }
             }
             .navigationTitle("Friends")
         }
@@ -84,11 +88,13 @@ struct FriendsView: View {
 
             Spacer()
 
-            Button("View") {
+            Button {
                 // show their pins
+            } label : {
+                Label ("View Pins", systemImage: "mappin")
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.small)
+            .frame(width: 140, height: 10)
+            .buttonStyle(PrimaryButtonStyle())
         }
     }
 
@@ -100,15 +106,21 @@ struct FriendsView: View {
             
             Spacer()
 
-            Button("Accept") {
+            Button {
                 Task { await viewModel.acceptRequest(request) }
+            } label: {
+                Label("Accept", systemImage: "checkmark")
             }
-            .buttonStyle(.borderedProminent)
+            .frame(width: 80, height: 10)
+            .buttonStyle(PrimaryButtonStyle())
 
-            Button("Reject") {
+            Button {
                 Task { await viewModel.rejectRequest(request) }
+            } label : {
+                Label("Reject", systemImage : "xmark")
             }
-            .buttonStyle(.bordered)
+            .frame(width: 80, height: 10)
+            .buttonStyle(DestructiveButtonStyle())
         }
     }
 
@@ -131,8 +143,8 @@ struct FriendsView: View {
                     await viewModel.sendFriendRequest(to: user)
                 }
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.small)
+            .frame(width: 80, height: 10)
+            .buttonStyle(PrimaryButtonStyle())
         }
     }
 }

@@ -5,7 +5,6 @@
 //  Created by Shahd Zahayka on 4/12/26.
 //
 
-
 import SwiftUI
 
 struct EditPinView: View {
@@ -22,15 +21,12 @@ struct EditPinView: View {
                 
                 // HEADING
                 Text("Edit Your Existing Pin")
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Color.textSub)
-                    .tracking(0.8)
+                    .sheetTitleStyle()
                 
                 //Display Location - you can't edit this
                 VStack(alignment: .leading, spacing: 8) {
                     Label("LOCATION", systemImage: "mappin.and.ellipse")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .sheetSubtitleStyle()
                     
                     HStack {
                         if let address = pin.address {
@@ -42,84 +38,60 @@ struct EditPinView: View {
                             Text("Locating...").font(.caption).italic()
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 12)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(12)
-                    
+                    .sheetTextFieldStyle()
                 }
                 
                 //NAME SECTION
                 VStack(alignment: .leading, spacing: 8) {
                     Label("NAME", systemImage: "signpost.right")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .sheetSubtitleStyle()
                     
                     TextField("Name", text: $pin.name)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 12)
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(12)
                         .onChange(of: pin.name) { _, new in
                             if new.count > 50 { pin.name = String(new.prefix(50)) }
                         }
+                        .sheetTextFieldStyle()
                 }
                 
                 //RATING AND COMMENTING SECTION
                 HStack (spacing: 20) {
                     VStack(alignment: .leading, spacing: 8){
                         Label("RATING", systemImage: "star.leadinghalf.fill")
-                            .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .sheetSubtitleStyle()
                         
                         HStack(spacing:4){
                             ForEach(1...5, id: \.self) { star in
                                 Image(systemName: star <= pin.rating ? "star.fill" : "star")
-                                    .foregroundStyle(.yellow)
-                                    .font(.title3)
+                                    .sheetStarStyle()
                                     .onTapGesture {
                                         withAnimation(.spring()){
                                             pin.rating = star }
                                     }
                             }
                         }
-                        .padding(.horizontal, 2)
-                        .padding(.vertical, 12)
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(12)
+                        .sheetRatingTextFieldStyle()
                     }
                     
                     VStack(alignment: .leading, spacing: 8){
                         Label("CATEGORY", systemImage: "tag.fill")
-                            .font(.subheadline.bold())
-                            .foregroundStyle(.secondary)
+                            .sheetSubtitleStyle()
                         
                         Picker("Category", selection: $pin.category) {
                             ForEach(PinCategory.allCases, id: \.self) { cat in
                                 Text(cat.rawValue).tag(cat)
                             }
                         }
-                        .pickerStyle(.menu)
-                        .labelsHidden()
-                        .frame(width: 140)
-                        .padding(.horizontal, 2)
-                        .padding(.vertical, 8)
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(12)
+                        .sheetCategoryTextFieldStyle()
                     }
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Label("COMMENT", systemImage: "message.fill")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.secondary)
+                        .sheetSubtitleStyle()
                     
                     TextField("Comment", text: $pin.comment, axis: .vertical)
                         .lineLimit(3...5)
-                        .padding()
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(8)
+                        .sheetTextFieldStyle()
                         .toolbar {  //temporary solution for dismissing keyboard
                             ToolbarItemGroup(placement: .keyboard) {
                                 Spacer()
@@ -133,18 +105,13 @@ struct EditPinView: View {
                         }
                 }
                 
-                
                 Button(action: {
                     model.updatePin(pin: pin)
                     dismiss()
                 }) {
                     Text("Save Changes")
-                        .frame(maxWidth: .infinity, maxHeight: 40)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.blue)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(12)
                 }
+                .buttonStyle(PrimaryButtonStyle())
             }
             .dynamicTypeSize(.xxLarge)
             .padding(.horizontal, 24)

@@ -26,6 +26,7 @@ struct MainView: View {
                                 Label("Your Profile", systemImage: "person")
                             }
         }
+        .tint(.appDarkGreen)
     }
 }
 

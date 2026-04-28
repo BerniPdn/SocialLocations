@@ -27,7 +27,7 @@ struct LoginView: View {
                         Text("Pin")
                             .foregroundStyle(Color.appGreen)
                         + Text("Pals")
-                            .foregroundStyle(Color.appRed)
+                            .foregroundStyle(Color.appBrown)
                     )
                     .font(.system(size: 64, weight: .black, design: .rounded))
                     
@@ -42,7 +42,7 @@ struct LoginView: View {
                         Group {
                             HStack(spacing:10){
                                 Image(systemName: "envelope")
-                                    .foregroundStyle(Color.appBlue)
+                                    .foregroundStyle(Color.appBrown)
                                     .frame(width: 10)
                                 TextField("", text: $email, prompt: Text("Email address")
                                     .foregroundStyle(Color.textSub.opacity(0.6))
@@ -52,30 +52,18 @@ struct LoginView: View {
                                 .autocorrectionDisabled()
                                 .foregroundStyle(Color.textMain)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 15)
-                            .background(Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.appGreen.opacity(0.3), lineWidth: 1.5)
-                            )
+                            .logSignTextFieldStyle()
                             
                             HStack(spacing:10){
                                 Image(systemName: "lock")
-                                    .foregroundStyle(Color.appBlue)
+                                    .foregroundStyle(Color.appBrown)
                                     .frame(width: 10)
                                 SecureField("", text: $password, prompt: Text("Password")
                                     .foregroundStyle(Color.textSub.opacity(0.6))
                                 )
                                 .foregroundStyle(Color.textMain)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 15)
-                            .background(Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.appGreen.opacity(0.3), lineWidth: 1.5)
-                            )
+                            .logSignTextFieldStyle()
                         }
                         
                         Button {
@@ -94,27 +82,16 @@ struct LoginView: View {
                                     .foregroundStyle(.white)
                                 }
                             }
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 52)
-                            .background(Color.appGreen)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                            .shadow(color: Color.appGreen.opacity(0.35), radius: 10, y: 5)
-                            .overlay(RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.appBlue.opacity(0.3), lineWidth: 1.5)
-                            )
                         }
+                        .buttonStyle(PrimaryButtonStyle())
+                        
                         
                         Button() {
                             showSignUp = true
                         } label : {
                             Text("Create Account")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                .foregroundStyle(Color.appBlue)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(Color.appBlue.opacity(0.07))
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
+                        .buttonStyle(SecondaryButtonStyle())
                         
                         
                         if authViewModel.isLoading {
@@ -127,7 +104,7 @@ struct LoginView: View {
                                 Text(authViewModel.errorMessage)
                                     .font(.system(size: 13, weight: .medium))
                             }
-                            .foregroundStyle(Color.appRed)
+                            .foregroundStyle(Color.appBrown)
                             .multilineTextAlignment(.center)
                             .padding(.top, 2)
                         }
@@ -135,13 +112,9 @@ struct LoginView: View {
                     .padding(22)
                     .background(Color.white.opacity(0.72))
                     .clipShape(RoundedRectangle(cornerRadius: 24))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 24)
-                            .stroke(Color.appGreen.opacity(0.15), lineWidth: 1.5)
-                    )
-                    
+
                     Spacer()
-                    
+
                 }
                 .padding(.horizontal, 26)
             }
