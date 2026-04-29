@@ -9,7 +9,7 @@ import SwiftUI
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 20, design: .rounded))
+            .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
@@ -21,11 +21,11 @@ struct PrimaryButtonStyle: ButtonStyle {
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 20, design: .rounded))
+            .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
-            .background(Color.appBrown.opacity(configuration.isPressed ? 0.1 : 0.4))
+            .background(Color.appBrown.opacity(configuration.isPressed ? 0.1 : 0.6))
             .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
@@ -33,7 +33,7 @@ struct SecondaryButtonStyle: ButtonStyle {
 struct DestructiveButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 20, design: .rounded))
+            .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
@@ -44,7 +44,7 @@ struct DestructiveButtonStyle: ButtonStyle {
 struct FriendAcceptButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 20, design: .rounded))
+            .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
             .frame(width: 36, height: 36)
             .background(Color.appGreen.opacity(configuration.isPressed ? 0.4 : 0.8))
@@ -55,7 +55,7 @@ struct FriendAcceptButtonStyle: ButtonStyle {
 struct FriendDestructiveButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 20, design: .rounded))
+            .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
             .frame(width: 36, height: 36)
             .background(Color.appRed.opacity(configuration.isPressed ? 0.4 : 0.8))
@@ -66,7 +66,7 @@ struct FriendDestructiveButtonStyle: ButtonStyle {
 struct FriendOptionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 20, design: .rounded))
+            .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
             .frame(width: 145, height: 35)
             .background(Color.appGreen.opacity(configuration.isPressed ? 0.4 : 0.8))

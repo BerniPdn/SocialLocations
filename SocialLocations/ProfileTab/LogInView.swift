@@ -79,9 +79,7 @@ struct LoginView: View {
                                     HStack(spacing: 8) {
                                         Image(systemName: "arrow.right.circle.fill")
                                         Text("Log In")
-                                            .font(.system(size: 16, weight: .bold, design: .rounded))
                                     }
-                                    .foregroundStyle(.white)
                                 }
                             }
                         }
