@@ -27,10 +27,12 @@ class FriendsViewModel: ObservableObject {
     private var requestsListener: ListenerRegistration?
     private var friendsListener: ListenerRegistration?
 
-    init() {
-        listenForIncomingRequests()
-        listenForFriends()
-        listenToSentRequests()
+    init(enableListeners: Bool = true) {
+        if enableListeners {
+            listenForIncomingRequests()
+            listenForFriends()
+            listenToSentRequests()
+        }
     }
     
     nonisolated deinit {
