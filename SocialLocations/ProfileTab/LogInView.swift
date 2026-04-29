@@ -51,6 +51,7 @@ struct LoginView: View {
                                 .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
                                 .foregroundStyle(Color.textMain)
+                                .accessibilityIdentifier("emailField")
                             }
                             .logSignTextFieldStyle()
                             
@@ -62,6 +63,7 @@ struct LoginView: View {
                                     .foregroundStyle(Color.textSub.opacity(0.6))
                                 )
                                 .foregroundStyle(Color.textMain)
+                                .accessibilityIdentifier("passwordField")
                             }
                             .logSignTextFieldStyle()
                         }
