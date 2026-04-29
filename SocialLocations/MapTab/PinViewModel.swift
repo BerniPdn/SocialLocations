@@ -23,7 +23,7 @@ class PinsViewModel: ObservableObject {
     @Published var selectedUserIds: Set<String> = [] // This will show all friends initially
     
     init() {
-        listenToPins()
+        //listenToPins()
     }
     
     // SAVE PIN → Firestore
@@ -54,27 +54,68 @@ class PinsViewModel: ObservableObject {
     }
     
     // REALTIME LISTENER
-    func listenToPins() {
-        FirestoreManager.shared.listenToPins { documents in
-            DispatchQueue.main.async {
-                self.pins = documents.compactMap { doc in
-                    guard let lat = doc["latitude"] as? Double,
-                          let lon = doc["longitude"] as? Double,
-                          let title = doc["title"] as? String
-                    else { return nil }
-                    let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
-                    
-                    return Pin(
-                        id: doc.documentID,
-                        coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
-                        name: title,
-                        address: existingAddress,
-                        comment: doc["comment"] as? String ?? "",
-                        rating: doc["rating"] as? Int ?? 0,
-                        userId: doc["userId"] as? String ?? ""
-                    )
+//    func listenToPins() {
+//        FirestoreManager.shared.listenToPins { documents in
+//            DispatchQueue.main.async {
+//                self.pins = documents.compactMap { doc in
+//                    guard let lat = doc["latitude"] as? Double,
+//                          let lon = doc["longitude"] as? Double,
+//                          let title = doc["title"] as? String
+//                    else { return nil }
+//                    let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
+//                    
+//                    return Pin(
+//                        id: doc.documentID,
+//                        coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
+//                        name: title,
+//                        address: existingAddress,
+//                        comment: doc["comment"] as? String ?? "",
+//                        rating: doc["rating"] as? Int ?? 0,
+//                        userId: doc["userId"] as? String ?? ""
+//                    )
+//                }
+//            }
+//        }
+//    }
+    func listenToPins(friendIDs: [String]) {
+        let allowedIDs = Array(Set(friendIDs + [currentUserId])).filter { !$0.isEmpty }
+        guard !allowedIDs.isEmpty else { return }
+
+        // Firestore 'in' queries allow max 30 items
+        let chunks = stride(from: 0, to: allowedIDs.count, by: 30).map {
+            Array(allowedIDs[$0..<min($0 + 30, allowedIDs.count)])
+        }
+
+        for chunk in chunks {
+            Firestore.firestore()
+                .collection("pins")
+                .whereField("userId", in: chunk)
+                .addSnapshotListener { snapshot, error in
+                    guard let documents = snapshot?.documents else { return }
+                    DispatchQueue.main.async {
+                        let newPins: [Pin] = documents.compactMap { doc in
+                            guard let lat = doc["latitude"] as? Double,
+                                  let lon = doc["longitude"] as? Double,
+                                  let title = doc["title"] as? String
+                            else { return nil }
+                            let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
+                            return Pin(
+                                id: doc.documentID,
+                                coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
+                                name: title,
+                                address: existingAddress,
+                                comment: doc["comment"] as? String ?? "",
+                                rating: doc["rating"] as? Int ?? 0,
+                                category: PinCategory(rawValue: doc["category"] as? String ?? "") ?? .other,
+                                userId: doc["userId"] as? String ?? ""
+                            )
+                        }
+                        // Merge, replacing any pins from this chunk
+                        let chunkUserIDs = Set(chunk)
+                        self.pins = self.pins.filter { !chunkUserIDs.contains($0.userId) || $0.userId.isEmpty }
+                        self.pins += newPins
+                    }
                 }
-            }
         }
     }
     
@@ -151,13 +192,13 @@ class PinsViewModel: ObservableObject {
     }
     
     // FUNCTIONS TO FILTER PINS
-    func listenToFriends() {
-        FirestoreManager.shared.listenToFriends { friendIds in
-            DispatchQueue.main.async {
-                self.friendIds = friendIds
-            }
-        }
-    }
+//    func listenToFriends() {
+//        FirestoreManager.shared.listenToFriends { friendIds in
+//            DispatchQueue.main.async {
+//                self.friendIds = friendIds
+//            }
+//        }
+//    }
     
     var filteredPins: [Pin] {
         if selectedUserIds.isEmpty {
