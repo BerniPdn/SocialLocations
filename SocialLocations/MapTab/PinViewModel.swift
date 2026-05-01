@@ -107,9 +107,25 @@ class PinsViewModel: ObservableObject {
                                 comment: doc["comment"] as? String ?? "",
                                 rating: doc["rating"] as? Int ?? 0,
                                 category: PinCategory(rawValue: doc["category"] as? String ?? "") ?? .other,
-                                userId: doc["userId"] as? String ?? ""
+                                userId: doc["userId"] as? String ?? "",
+                                username: nil
                             )
                         }
+                        // Getting username for each pin
+                        var pinsWithUsernames = newPins
+                        for i in pinsWithUsernames.indices {
+                            let userId = pinsWithUsernames[i].userId
+                            FirestoreManager.shared.fetchUsername(for: userId) { result in
+                                DispatchQueue.main.async {
+                                    if let index = self.pins.firstIndex(where: { $0.id == pinsWithUsernames[i].id }) {
+                                        if case .success(let username) = result {
+                                            self.pins[index].username = username
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
                         // Merge, replacing any pins from this chunk
                         let chunkUserIDs = Set(chunk)
                         self.pins = self.pins.filter { !chunkUserIDs.contains($0.userId) || $0.userId.isEmpty }

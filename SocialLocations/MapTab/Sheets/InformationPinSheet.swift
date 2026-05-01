@@ -7,6 +7,7 @@
 
 import MapKit
 import SwiftUI
+import FirebaseAuth
 
 struct InformationPinSheet: View {
     @EnvironmentObject var model: PinsViewModel
@@ -28,6 +29,25 @@ struct InformationPinSheet: View {
                 Text(pin?.name.isEmpty == false ? pin!.name : "Unknown Place")
                     .sheetTitleStyle()
                 
+                
+                //CREATOR'S USERNAME
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("PINPAL USERNAME", systemImage: "person.fill")
+                        .sheetSubtitleStyle()
+                    
+                    HStack {
+                        if let username = pin?.username {
+                            Text(username)
+                                .sheetTextStyle()
+                        } else {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Locating user...").font(.caption).italic()
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
                 //ADDRESS SECTION
                 VStack(alignment: .leading, spacing: 8) {
                     Label("LOCATION", systemImage: "mappin.and.ellipse")
@@ -46,7 +66,6 @@ struct InformationPinSheet: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                Divider()
                 
                 //RATING AND CATEGORY SECTION
                 VStack(alignment: .leading, spacing: 8){
@@ -61,7 +80,6 @@ struct InformationPinSheet: View {
                     }
                 }
                 
-                Divider()
                 
                 VStack(alignment: .leading, spacing: 8){
                     Label("CATEGORY", systemImage: "tag.fill")
@@ -70,9 +88,7 @@ struct InformationPinSheet: View {
                     Text(pin?.category.rawValue ?? "")
                         .sheetCapsuleStyle()
                 }
-                
-                Divider()
-
+                                
                 //COMMENT SECTION
                 VStack(alignment: .leading, spacing: 8) {
                     Label("COMMENT", systemImage: "message.fill")
@@ -84,24 +100,26 @@ struct InformationPinSheet: View {
                 
                 //BUTTONS
                 HStack (spacing: 40){
-                    Button(action: {
-                        isEditing = true
-                    }) {
-                        Label("Edit", systemImage: "pencil")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 13)
+                    if pin?.userId == Auth.auth().currentUser?.uid {
+                        Button(action: {
+                            isEditing = true
+                        }) {
+                            Label("Edit", systemImage: "pencil")
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 13)
+                        }
+                        .buttonStyle(PrimaryButtonStyle())
+                        
+                        Button(action: {
+                            model.deletePin(pinID: pinID)
+                            onDismiss()
+                        }) {
+                            Label("Delete", systemImage: "mappin.slash")
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 13)
+                        }
+                        .buttonStyle(DestructiveButtonStyle())
                     }
-                    .buttonStyle(PrimaryButtonStyle())
-                    
-                    Button(action: {
-                        model.deletePin(pinID: pinID)
-                        onDismiss()
-                    }) {
-                        Label("Delete", systemImage: "mappin.slash")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 13)
-                    }
-                    .buttonStyle(DestructiveButtonStyle())
                 }
             }
             

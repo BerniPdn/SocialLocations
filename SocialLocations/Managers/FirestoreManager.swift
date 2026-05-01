@@ -82,6 +82,23 @@ class FirestoreManager {
             completion(.failure(error))
         }
     }
+    
+    func fetchUsername(for userId: String, completion: @escaping (Result<String, Error>) -> Void) {
+        db.collection("users").document(userId).getDocument { document, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let username = document?.data()?["username"] as? String else {
+                completion(.failure(NSError(domain: "FirestoreManager", code: 0,
+                    userInfo: [NSLocalizedDescriptionKey: "Username not found"])))
+                return
+            }
+            
+            completion(.success(username))
+        }
+    }
 
     // FRIENDS
 

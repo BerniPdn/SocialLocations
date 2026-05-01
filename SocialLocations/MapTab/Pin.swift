@@ -30,4 +30,5 @@ struct Pin: Identifiable{
     var rating: Int
     var category: PinCategory = .other
     var userId: String
+    var username: String?
 }
