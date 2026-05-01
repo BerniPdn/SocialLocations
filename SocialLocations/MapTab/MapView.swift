@@ -46,19 +46,26 @@ struct MapView: View {
             }
     }
     
-    @ViewBuilder
-    private func fixedAnnotation(for location: some Identifiable) -> some View {
-        Image(location.imageName)
-            .resizable()
-            .frame(width: location.width, height: location.height)
-    }
+//    @ViewBuilder
+//    private func fixedAnnotation(for location: some Identifiable) -> some View {
+//        Image(location.imageName)
+//            .resizable()
+//            .frame(width: location.width, height: location.height)
+//    }
     
     var body: some View {
         MapReader { proxy in
             Map(position: $position) {
+//                ForEach(FixedLocations.all, id: \.name) { location in
+//                    Annotation(location.name, coordinate: location.coordinate) {
+//                        fixedAnnotation(for: location)
+//                    }
+//                }
                 ForEach(FixedLocations.all, id: \.name) { location in
                     Annotation(location.name, coordinate: location.coordinate) {
-                        fixedAnnotation(for: location)
+                        Image(location.imageName)
+                            .resizable()
+                            .frame(width: location.width, height: location.height)
                     }
                 }
                 
@@ -152,7 +159,7 @@ private struct SearchOverlay: View {
     var onSelectAutocomplete: (String) -> Void
     var onSelectMapItem: (MKMapItem) -> Void
     var onClear: () -> Void
-    //@FocusState private var isFocused: Bool
+    @FocusState private var isFocused: Bool
 
     private var showingResults: Bool {
         isFocused && (!autoCompleteResults.isEmpty || !mapItems.isEmpty)
