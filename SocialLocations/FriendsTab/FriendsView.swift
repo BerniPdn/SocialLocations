@@ -89,9 +89,9 @@ struct FriendsView: View {
             Spacer()
             
             Button {
-                // show their pins
+                Task {viewModel.deleteFriends(friendId: user.id ?? "") }
             } label : {
-                Label ("View Pins", systemImage: "mappin")
+                Label ("Delete Friend", systemImage: "person.slash")
             }
             .buttonStyle(FriendOptionButtonStyle())
         }

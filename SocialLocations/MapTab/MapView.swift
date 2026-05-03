@@ -146,6 +146,8 @@ struct MapView: View {
                         selectedPinID = nil
                     })
                     .environmentObject(pinsModel)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
                 }
             }
         }

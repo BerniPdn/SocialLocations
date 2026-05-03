@@ -90,6 +90,36 @@ class FriendsViewModel: ObservableObject {
                 }
         }
     
+    func deleteFriends(friendId: String){
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+       
+        let batch = db.batch()
+        
+        let currentUserRef = db.collection("users").document(uid)
+            batch.updateData(["friendIDs": FieldValue.arrayRemove([friendId])], forDocument: currentUserRef)
+            
+        let friendUserRef = db.collection("users").document(friendId)
+        batch.updateData(["friendIDs": FieldValue.arrayRemove([uid])], forDocument: friendUserRef)
+            
+        batch.commit { error in
+            if let error = error {
+                print("Error removing friend: \(error)")
+            }
+        }
+        db.collection("friend_requests")
+            .whereField("fromUserId", isEqualTo: uid)
+            .whereField("toUserId", isEqualTo: friendId)
+            .getDocuments { snapshot, _ in
+                snapshot?.documents.forEach { $0.reference.delete() }
+            }
+        db.collection("friend_requests")
+            .whereField("fromUserId", isEqualTo: friendId)
+            .whereField("toUserId", isEqualTo: uid)
+            .getDocuments { snapshot, _ in
+                snapshot?.documents.forEach { $0.reference.delete() }
+            }
+    }
+    
     // Data fetching
     func fetchFriendsByIDs(_ ids: [String]) async {
             guard !ids.isEmpty else {

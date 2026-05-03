@@ -68,8 +68,8 @@ struct FriendOptionButtonStyle: ButtonStyle {
         configuration.label
             .font(.system(size: 16, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
-            .frame(width: 145, height: 35)
-            .background(Color.appGreen.opacity(configuration.isPressed ? 0.4 : 0.8))
+            .frame(width: 150, height: 35)
+            .background(Color.appRed.opacity(configuration.isPressed ? 0.4 : 0.8))
             .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
