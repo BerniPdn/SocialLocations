@@ -27,6 +27,7 @@ struct MainView: View {
                             }
         }
         .tint(.appDarkGreen)
+        .preferredColorScheme(.light)
     }
 }
 

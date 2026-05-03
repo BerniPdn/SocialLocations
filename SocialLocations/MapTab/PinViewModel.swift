@@ -168,7 +168,8 @@ class PinsViewModel: ObservableObject {
             comment: "",
             rating: 0,
             category: .other,
-            userId: "",
+            userId: Auth.auth().currentUser?.uid ?? "",
+            username: nil
         ))
     }
     
