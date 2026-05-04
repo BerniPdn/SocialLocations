@@ -34,7 +34,7 @@ class PinsViewModel: ObservableObject {
                  category: PinCategory,
                  id: String) {
         
-        let userId = Auth.auth().currentUser?.uid ?? ""
+        //let userId = Auth.auth().currentUser?.uid ?? ""
         
         guard let uid = Auth.auth().currentUser?.uid else {
             print("No authenticated user")

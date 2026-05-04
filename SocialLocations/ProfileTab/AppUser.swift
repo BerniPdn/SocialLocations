@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct AppUser: Identifiable, Codable, Equatable {
+struct AppUser: Identifiable, Codable, Equatable, Sendable {
     @DocumentID var id: String?
     
     let username: String
