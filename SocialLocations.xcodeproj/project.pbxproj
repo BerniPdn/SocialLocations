@@ -12,6 +12,7 @@
 		924555272F647320004BC7AC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 924555262F647320004BC7AC /* FirebaseAuth */; };
 		924555292F647328004BC7AC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 924555282F647328004BC7AC /* FirebaseFirestore */; };
 		926F35EE2FA85CC300283F19 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 926F35ED2FA85CBC00283F19 /* README.md */; };
+		926F35F02FA8610F00283F19 /* PinPals.png in Resources */ = {isa = PBXBuildFile; fileRef = 926F35EF2FA8610F00283F19 /* PinPals.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +35,7 @@
 /* Begin PBXFileReference section */
 		9245551E2F646B78004BC7AC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		926F35ED2FA85CBC00283F19 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		926F35EF2FA8610F00283F19 /* PinPals.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PinPals.png; sourceTree = "<group>"; };
 		C3F67CAD2F579BF800B9A5CE /* SocialLocations.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SocialLocations.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F67CBA2F579BFA00B9A5CE /* SocialLocationsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SocialLocationsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F67CC42F579BFA00B9A5CE /* SocialLocationsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SocialLocationsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,6 +114,7 @@
 				C3F67CBD2F579BFA00B9A5CE /* SocialLocationsTests */,
 				C3F67CC72F579BFA00B9A5CE /* SocialLocationsUITests */,
 				9245551E2F646B78004BC7AC /* GoogleService-Info.plist */,
+				926F35EF2FA8610F00283F19 /* PinPals.png */,
 				926F35ED2FA85CBC00283F19 /* README.md */,
 				924555232F647313004BC7AC /* Frameworks */,
 				C3F67CAE2F579BF800B9A5CE /* Products */,
@@ -255,6 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				926F35EE2FA85CC300283F19 /* README.md in Resources */,
+				926F35F02FA8610F00283F19 /* PinPals.png in Resources */,
 				9245551F2F646B78004BC7AC /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
