@@ -78,10 +78,6 @@ struct SignUpView: View {
                             authViewModel.signUp(email: email, password: password, username: username,
                                                  phoneNumber: phoneNumber)
                             
-                            let cleanUsername = username
-                                .trimmingCharacters(in: .whitespacesAndNewlines)
-                                .lowercased()
-                            let cleanPhone = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
                             
                         } label: {
                             Group {

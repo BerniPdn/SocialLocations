@@ -75,7 +75,7 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    func updateProfile(username: String, phoneNumber: String, completion: @escaping (Bool) -> Void) {
+    func updateProfile(username: String, phoneNumber: String, profileImageURL: String, completion: @escaping (Bool) -> Void) {
         isLoading = true
         errorMessage = ""
         guard let current = appUser else { return }
@@ -85,7 +85,7 @@ class AuthViewModel: ObservableObject {
             username: username,
             usernameLower: username.lowercased(),
             phoneNumber: phoneNumber,
-            profileImageURL: current.profileImageURL,
+            profileImageURL: profileImageURL,
             email: current.email,
             friendIDs: current.friendIDs
         )
@@ -102,7 +102,8 @@ class AuthViewModel: ObservableObject {
                     self?.errorMessage = error.localizedDescription
                     completion(false)
                 }
-            }}
+            }
+        }
     }
 
     func loadCurrentUser() {
