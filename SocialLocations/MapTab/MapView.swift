@@ -31,14 +31,11 @@ struct MapView: View {
     )
     
     @State private var isSheetPresented: Bool = true
+    @State private var savedCoordinate: CLLocationCoordinate2D? = nil
     
     @ViewBuilder
     private func pinAnnotation(for pin: Pin) -> some View {
-        Image("Paul")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 40, height: 40)
-            .clipShape(Circle())
+        PinAnnotationView(pin: pin)
             .onTapGesture {
                 selectedPinID = pin.id
             }
@@ -119,35 +116,46 @@ struct MapView: View {
                         }
                         pendingPinID = nil
                     }}
-                )) {
-                    if let id = pendingPinID {
-                        NewPinSheet(pinID: id, onDismiss: {
-                            pendingPinID = nil
-                        })
-                        .environmentObject(pinsModel)
+                                    )) {
+                                        if let id = pendingPinID {
+                                            NewPinSheet(pinID: id, onDismiss: {
+                                                pendingPinID = nil
+                                            }, onSave: { coordinate in
+                                                withAnimation {
+                                                    position = .region(MKCoordinateRegion(
+                                                        center: coordinate,
+                                                        span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+                                                    ))
+                                                }
+                                            })
+                                            .environmentObject(pinsModel)
+                                        }
+                                    }
+                                    .sheet(isPresented: Binding(
+                                        get: { selectedPinID != nil },
+                                        set: { if !$0 { selectedPinID = nil } }
+                                    )) {
+                                        if let id = selectedPinID {
+                                            InformationPinSheet(pinID: id, onDismiss: {
+                                                selectedPinID = nil
+                                            })
+                                            .environmentObject(pinsModel)
+                                            .presentationDetents([.large])
+                                            .presentationDragIndicator(.visible)
+                                        }
+                                    }
+                                }
+                                if showMapTutorial {
+                                    TutorialOverlay(
+                                        message: "Double tap to add a pin",
+                                        onDismiss: {
+                                            withAnimation { showMapTutorial = false }
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
-                }
-                .sheet(isPresented: Binding(
-                    get: { selectedPinID != nil },
-                    set: { if !$0 { selectedPinID = nil } }
-                )) {
-                    if let id = selectedPinID {
-                        InformationPinSheet(pinID: id, onDismiss: {
-                            selectedPinID = nil
-                        })
-                        .environmentObject(pinsModel)
-                        .presentationDetents([.large])
-                        .presentationDragIndicator(.visible)
-                    }
-                }
-            }
-            if showMapTutorial {
-                TutorialOverlay(
-                    message: "Double tap to add a pin",
-                    onDismiss: {
-                        withAnimation { showMapTutorial = false }
-                    }
-                )
             }
         }
     }
@@ -161,11 +169,11 @@ private struct SearchOverlay: View {
     var onSelectMapItem: (MKMapItem) -> Void
     var onClear: () -> Void
     @FocusState private var isFocused: Bool
-
+    
     private var showingResults: Bool {
         isFocused && (!autoCompleteResults.isEmpty || !mapItems.isEmpty)
     }
-
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
@@ -187,7 +195,7 @@ private struct SearchOverlay: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-
+            
             if showingResults {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
@@ -233,4 +241,35 @@ private struct SearchOverlay: View {
         .tint(.appDarkGreen)
     }
 }
+private struct PinAnnotationView: View {
+    let pin: Pin
+    @State private var profileImageURL: String? = nil
 
+    var body: some View {
+            Group {
+                if let urlString = profileImageURL,
+                   !urlString.isEmpty,
+                   let url = URL(string: urlString) {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+                } else {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.gray)
+                }
+            }
+            .onAppear {
+                FirestoreManager.shared.fetchProfileImageURL(for: pin.userId) { result in
+                    if case .success(let url) = result {
+                        profileImageURL = url
+                    }
+                }
+            }
+        }
+    }

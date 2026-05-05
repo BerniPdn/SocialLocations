@@ -20,11 +20,25 @@ struct ProfileView: View {
                 
                 VStack(spacing: 20) {
                     // Profile Picture
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .frame(width: 120, height: 120)
-                        .foregroundColor(.gray)
-                        .padding(.top, 40)
+                    Group {
+                        if let urlString = authViewModel.appUser?.profileImageURL,
+                           !urlString.isEmpty,
+                           let url = URL(string: urlString) {
+                            AsyncImage(url: url) { image in
+                                image.resizable().scaledToFill()
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(width: 120, height: 120)
+                            .clipShape(Circle())
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .frame(width: 120, height: 120)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .padding(.top, 40)
             
                     Text(authViewModel.appUser?.username ?? "No Username")
                         .font(.title)

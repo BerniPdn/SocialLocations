@@ -137,4 +137,15 @@ class FirestoreManager {
                 completion(friends)
             }
     }
+    
+    func fetchProfileImageURL(for userId: String, completion: @escaping (Result<String, Error>) -> Void) {
+        db.collection("users").document(userId).getDocument { document, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            let url = document?.data()?["profileImageURL"] as? String ?? ""
+            completion(.success(url))
+        }
+    }
 }

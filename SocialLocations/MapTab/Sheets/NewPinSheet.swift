@@ -13,6 +13,7 @@ struct NewPinSheet: View {
     
     var pinID: String
     var onDismiss: () -> Void
+    var onSave: (CLLocationCoordinate2D) -> Void
     
     private var pin: Pin? {
         model.pins.first(where: { $0.id == pinID })
@@ -24,10 +25,10 @@ struct NewPinSheet: View {
     @State private var category: PinCategory = .other
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AppBackground()
-                
+        ZStack {
+            AppBackground()
+            
+            ScrollView{
                 VStack(alignment: .leading, spacing: 35) {
                     // HEADING
                     Text("Add a Pin!")
@@ -56,7 +57,7 @@ struct NewPinSheet: View {
                         Label("NAME", systemImage: "signpost.right")
                             .sheetSubtitleStyle()
                         
-                        TextField("How is this place called?", text: $name)
+                        TextField("What is this place called?", text: $name)
                             .sheetTextFieldStyle()
                             .onChange(of: name) { _, new in
                                 if new.count > 50 { name = String(new.prefix(50)) }
@@ -85,7 +86,7 @@ struct NewPinSheet: View {
                         VStack(alignment: .leading, spacing: 8){
                             Label("CATEGORY", systemImage: "tag.fill")
                                 .sheetSubtitleStyle()
-                        
+                            
                             Picker("Category", selection: $category) {
                                 ForEach(PinCategory.allCases, id: \.self) { cat in
                                     Text(cat.rawValue).tag(cat)
@@ -130,7 +131,6 @@ struct NewPinSheet: View {
                 .dynamicTypeSize(.xxLarge)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 15)
-                
             }
         }
     }
@@ -152,7 +152,7 @@ struct NewPinSheet: View {
             category: category,
             id: pinID
         )
-        
+        onSave(currentPin.coordinate)
         onDismiss()
     }
 }
