@@ -7,12 +7,9 @@
 
 import SwiftUI
 import MapKit
-//extension UUID: @retroactive Identifiable {
-//    public var id: UUID { self }
-//}
 
 struct MapView: View {
-
+    
     var friendUserId: String? = nil //optional friends filter
     var friendUsername: String? = nil
     
@@ -22,8 +19,11 @@ struct MapView: View {
     @State private var selectedPinID: String?
     @State private var longPressDidFire = false
 //    @State private var isSearchActive: Bool = false
+
     @FocusState private var isSearchFieldFocused: Bool
     @StateObject private var friendsViewModel = FriendsViewModel()
+    @AppStorage("hasSeenMapTutorial") private var hasSeenMapTutorial = false
+    @State private var showMapTutorial = false
     
     
     @State private var position = MapCameraPosition.region(
@@ -44,45 +44,49 @@ struct MapView: View {
             }
     }
     
-//    @ViewBuilder
-//    private func fixedAnnotation(for location: some Identifiable) -> some View {
-//        Image(location.imageName)
-//            .resizable()
-//            .frame(width: location.width, height: location.height)
-//    }
     
     var body: some View {
-        MapReader { proxy in
-            Map(position: $position) {
-//                ForEach(FixedLocations.all, id: \.name) { location in
-//                    Annotation(location.name, coordinate: location.coordinate) {
-//                        fixedAnnotation(for: location)
-//                    }
-//                }
-                ForEach(FixedLocations.all, id: \.name) { location in
-                    Annotation(location.name, coordinate: location.coordinate) {
-                        Image(location.imageName)
-                            .resizable()
-                            .frame(width: location.width, height: location.height)
+        ZStack {
+            MapReader { proxy in
+                Map(position: $position) {
+                    ForEach(FixedLocations.all, id: \.name) { location in
+                        Annotation(location.name, coordinate: location.coordinate) {
+                            Image(location.imageName)
+                                .resizable()
+                                .frame(width: location.width, height: location.height)
+                        }
+                    }
+                    
+                    ForEach(pinsModel.pins) { pin in
+                        Annotation(pin.name, coordinate: pin.coordinate) {
+                            pinAnnotation(for: pin)
+                        }
                     }
                 }
                 
-                ForEach(pinsModel.pins) { pin in
-                    Annotation(pin.name, coordinate: pin.coordinate) {
-                        pinAnnotation(for: pin)
-                    }
+                .mapStyle(.standard())
+                .overlay(alignment: .top) {
+                    SearchOverlay(
+                        query: $searchModel.query,
+                        autoCompleteResults: searchModel.autoCompleteResults,
+                        mapItems: searchModel.mapItems,
+                        onSelectAutocomplete: { searchModel.search(for: $0) },
+                        onSelectMapItem: { searchModel.select(item: $0) },
+                        onClear: { isSearchFieldFocused = false }
+                    )
                 }
-            }
-            
-            .mapStyle(.standard())
-            .overlay(alignment: .top) {
-                SearchOverlay(
-                    query: $searchModel.query,
-                    autoCompleteResults: searchModel.autoCompleteResults,
-                    mapItems: searchModel.mapItems,
-                    onSelectAutocomplete: { searchModel.search(for: $0) },
-                    onSelectMapItem: { searchModel.select(item: $0) },
-                    onClear: { isSearchFieldFocused = false }
+                
+                .gesture(
+                    LongPressGesture(minimumDuration: 0.5)
+                        .simultaneously(with: DragGesture(minimumDistance: 0))
+                        .onEnded { value in
+                            if let dragValue = value.second,
+                               let coordinate = proxy.convert(dragValue.startLocation, from: .local) {
+                                let tempID = UUID().uuidString
+                                pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
+                                pendingPinID = tempID
+                            }
+                        }
                 )
             }
             .gesture(
@@ -139,34 +143,51 @@ struct MapView: View {
                 if let id = pendingPinID {
                     NewPinSheet(pinID: id, onDismiss: {
                         pendingPinID = nil
-                    }, onSave: { coordinate in
-                        withAnimation {
-                            position = .region(MKCoordinateRegion(
-                                center: coordinate,
-                                span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-                            ))
+                    }}
+                                    )) {
+                                        if let id = pendingPinID {
+                                            NewPinSheet(pinID: id, onDismiss: {
+                                                pendingPinID = nil
+                                            }, onSave: { coordinate in
+                                                withAnimation {
+                                                    position = .region(MKCoordinateRegion(
+                                                        center: coordinate,
+                                                        span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+                                                    ))
+                                                }
+                                            })
+                                            .environmentObject(pinsModel)
+                                        }
+                                    }
+                                    .sheet(isPresented: Binding(
+                                        get: { selectedPinID != nil },
+                                        set: { if !$0 { selectedPinID = nil } }
+                                    )) {
+                                        if let id = selectedPinID {
+                                            InformationPinSheet(pinID: id, onDismiss: {
+                                                selectedPinID = nil
+                                            })
+                                            .environmentObject(pinsModel)
+                                            .presentationDetents([.large])
+                                            .presentationDragIndicator(.visible)
+                                        }
+                                    }
+                                }
+                                if showMapTutorial {
+                                    TutorialOverlay(
+                                        message: "Double tap to add a pin",
+                                        onDismiss: {
+                                            withAnimation { showMapTutorial = false }
+                                        }
+                                    )
+                                }
+                            }
                         }
-                    })
-                    .environmentObject(pinsModel)
-                }
-            }
-            
-            .sheet(isPresented: Binding(
-                get: { selectedPinID != nil },
-                set: { if !$0 { selectedPinID = nil } }
-            )) {
-                if let id = selectedPinID {
-                    InformationPinSheet(pinID: id, onDismiss: {
-                        selectedPinID = nil
-                    })
-                    .environmentObject(pinsModel)
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
-                }
-            }
-        }
-    }
-}
+                    }
+//            }
+//        }
+//    }
+//}
 
 private struct SearchOverlay: View {
     @Binding var query: String
@@ -253,30 +274,30 @@ private struct PinAnnotationView: View {
     @State private var profileImageURL: String? = nil
 
     var body: some View {
-        Group {
-            if let urlString = profileImageURL,
-               !urlString.isEmpty,
-               let url = URL(string: urlString) {
-                AsyncImage(url: url) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    ProgressView()
-                }
-                .frame(width: 40, height: 40)
-                .clipShape(Circle())
-            } else {
-                Image(systemName: "person.crop.circle.fill")
-                    .resizable()
+            Group {
+                if let urlString = profileImageURL,
+                   !urlString.isEmpty,
+                   let url = URL(string: urlString) {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        ProgressView()
+                    }
                     .frame(width: 40, height: 40)
-                    .foregroundColor(.gray)
+                    .clipShape(Circle())
+                } else {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.gray)
+                }
             }
-        }
-        .onAppear {
-            FirestoreManager.shared.fetchProfileImageURL(for: pin.userId) { result in
-                if case .success(let url) = result {
-                    profileImageURL = url
+            .onAppear {
+                FirestoreManager.shared.fetchProfileImageURL(for: pin.userId) { result in
+                    if case .success(let url) = result {
+                        profileImageURL = url
+                    }
                 }
             }
         }
     }
-}

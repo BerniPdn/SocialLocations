@@ -12,6 +12,10 @@ struct FriendsView: View {
     @StateObject private var viewModel = FriendsViewModel()
     @State private var searchText = ""
     @State private var searchTask: Task<Void, Never>? = nil
+    @State private var friendToDelete: AppUser? = nil
+    @State private var showDeleteAlert = false
+    @AppStorage("hasSeenFriendsTutorial") private var hasSeenFriendsTutorial = false
+    @State private var showFriendsTutorial = false
     
     var body: some View {
         NavigationStack {
@@ -59,6 +63,14 @@ struct FriendsView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
+                if showFriendsTutorial {
+                    TutorialOverlay(
+                        message: "Search for friends by username or phone number. Accept or decline incoming requests here.",
+                        onDismiss: {
+                            withAnimation { showFriendsTutorial = false }
+                        }
+                    )
+                }
             }
             .searchable(text: $searchText, prompt: "Search by username")
             .textInputAutocapitalization(.never)
@@ -74,6 +86,20 @@ struct FriendsView: View {
                 }
             }
             .navigationTitle("Friends")
+            .task { 
+                guard !hasSeenFriendsTutorial else { return }
+                try? await Task.sleep(nanoseconds: 800_000_000)
+                hasSeenFriendsTutorial = true
+                withAnimation { showFriendsTutorial = true }
+            }
+            .alert("Remove Friend", isPresented: $showDeleteAlert, presenting: friendToDelete) { friend in
+                Button("Remove", role: .destructive) {
+                    Task { viewModel.deleteFriends(friendId: friend.id ?? "") }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: { friend in
+                Text("Are you sure you want to remove \(friend.username) from your friends?")
+            }
         }
     }
     
@@ -89,7 +115,8 @@ struct FriendsView: View {
             Spacer()
             
             Button {
-                Task {viewModel.deleteFriends(friendId: user.id ?? "") }
+                friendToDelete = user
+                showDeleteAlert = true
             } label : {
                 Label ("Delete Friend", systemImage: "person.slash")
             }
@@ -135,23 +162,33 @@ struct FriendsView: View {
             
             Spacer()
             
-            if viewModel.sentRequestUserIds.contains(user.id!) {
+            if viewModel.friends.contains(where: { $0.id == user.id }) {
+                // Already friends (arrived via a direct search result before the list refreshed)
+                Text("Already Friends")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.appDarkGreen)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.appDarkGreen.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+ 
+            } else if viewModel.sentRequestUserIds.contains(user.id!) {
+                // A pending request has been sent but not yet accepted
                 Text("Request Sent")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(Color.textSub)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(Color.textSub.opacity(0.1))
-                
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+ 
             } else {
                 Button {
-                    Task {
-                        await viewModel.sendFriendRequest(to: user)}
-                } label : {
-                    Label ("Add Friend", systemImage: "plus")
+                    Task { await viewModel.sendFriendRequest(to: user) }
+                } label: {
+                    Label("Add Friend", systemImage: "plus")
                 }
                 .buttonStyle(FriendOptionButtonStyle())
-                
             }
         }
     }
