@@ -20,6 +20,7 @@ struct MapView: View {
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
     @State private var selectedPinID: String?
+    @State private var longPressDidFire = false
 //    @State private var isSearchActive: Bool = false
     @FocusState private var isSearchFieldFocused: Bool
     @StateObject private var friendsViewModel = FriendsViewModel()
@@ -84,17 +85,25 @@ struct MapView: View {
                     onClear: { isSearchFieldFocused = false }
                 )
             }
-
             .gesture(
                 LongPressGesture(minimumDuration: 0.5)
                     .simultaneously(with: DragGesture(minimumDistance: 0))
                     .onEnded { value in
-                        if let dragValue = value.second,
-                           let coordinate = proxy.convert(dragValue.startLocation, from: .local) {
-                            let tempID = UUID().uuidString
-                            pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
-                            pendingPinID = tempID
+                        if value.first == true, !longPressDidFire {
+                            longPressDidFire = true
+                            
+                            if let dragValue = value.second,
+                               let coordinate = proxy.convert(dragValue.startLocation, from: .local) {
+                                let tempID = UUID().uuidString
+                                pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
+                                pendingPinID = tempID
                         }
+            
+                        
+                        }
+                    }
+                    .onEnded { _ in
+                        longPressDidFire = false
                     }
             )
 
