@@ -60,7 +60,7 @@ struct FriendsView: View {
                 }
                 .scrollContentBackground(.hidden)
             }
-            .searchable(text: $searchText, prompt: "Search by username or phone number")
+            .searchable(text: $searchText, prompt: "Search by username")
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled(true)
             .onChange(of: searchText) { _, newValue in

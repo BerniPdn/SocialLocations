@@ -56,7 +56,7 @@ struct NewPinSheet: View {
                         Label("NAME", systemImage: "signpost.right")
                             .sheetSubtitleStyle()
                         
-                        TextField("How is this place called?", text: $name)
+                        TextField("What is this place called?", text: $name)
                             .sheetTextFieldStyle()
                             .onChange(of: name) { _, new in
                                 if new.count > 50 { name = String(new.prefix(50)) }
