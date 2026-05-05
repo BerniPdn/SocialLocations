@@ -33,6 +33,7 @@ struct MapView: View {
     )
     
     @State private var isSheetPresented: Bool = true
+    @State private var savedCoordinate: CLLocationCoordinate2D? = nil
     
     @ViewBuilder
     private func pinAnnotation(for pin: Pin) -> some View {
@@ -133,10 +134,18 @@ struct MapView: View {
                 if let id = pendingPinID {
                     NewPinSheet(pinID: id, onDismiss: {
                         pendingPinID = nil
+                    }, onSave: { coordinate in
+                        withAnimation {
+                            position = .region(MKCoordinateRegion(
+                                center: coordinate,
+                                span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+                            ))
+                        }
                     })
                     .environmentObject(pinsModel)
                 }
             }
+            
             .sheet(isPresented: Binding(
                 get: { selectedPinID != nil },
                 set: { if !$0 { selectedPinID = nil } }
