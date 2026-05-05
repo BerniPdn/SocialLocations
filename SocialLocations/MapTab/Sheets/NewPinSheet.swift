@@ -13,6 +13,7 @@ struct NewPinSheet: View {
     
     var pinID: String
     var onDismiss: () -> Void
+    var onSave: (CLLocationCoordinate2D) -> Void
     
     private var pin: Pin? {
         model.pins.first(where: { $0.id == pinID })
@@ -151,7 +152,7 @@ struct NewPinSheet: View {
             category: category,
             id: pinID
         )
-        
+        onSave(currentPin.coordinate)
         onDismiss()
     }
 }

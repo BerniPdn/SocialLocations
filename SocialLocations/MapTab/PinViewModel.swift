@@ -20,7 +20,7 @@ class PinsViewModel: ObservableObject {
     }
     
     @Published var friendIds: [String] = []
-    @Published var selectedUserIds: Set<String> = [] // This will show all friends initially
+    @Published var selectedUserIds: Set<String> = []
     
     init() {
         //listenToPins()
