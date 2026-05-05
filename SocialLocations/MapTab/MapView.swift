@@ -37,11 +37,7 @@ struct MapView: View {
     
     @ViewBuilder
     private func pinAnnotation(for pin: Pin) -> some View {
-        Image("Paul")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 40, height: 40)
-            .clipShape(Circle())
+        PinAnnotationView(pin: pin)
             .onTapGesture {
                 selectedPinID = pin.id
             }
@@ -171,11 +167,11 @@ private struct SearchOverlay: View {
     var onSelectMapItem: (MKMapItem) -> Void
     var onClear: () -> Void
     @FocusState private var isFocused: Bool
-
+    
     private var showingResults: Bool {
         isFocused && (!autoCompleteResults.isEmpty || !mapItems.isEmpty)
     }
-
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
@@ -197,7 +193,7 @@ private struct SearchOverlay: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-
+            
             if showingResults {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
@@ -243,7 +239,35 @@ private struct SearchOverlay: View {
         .tint(.appDarkGreen)
     }
 }
+private struct PinAnnotationView: View {
+    let pin: Pin
+    @State private var profileImageURL: String? = nil
 
-//#Preview {
-//    MapView()
-//}
+    var body: some View {
+        Group {
+            if let urlString = profileImageURL,
+               !urlString.isEmpty,
+               let url = URL(string: urlString) {
+                AsyncImage(url: url) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    ProgressView()
+                }
+                .frame(width: 40, height: 40)
+                .clipShape(Circle())
+            } else {
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.gray)
+            }
+        }
+        .onAppear {
+            FirestoreManager.shared.fetchProfileImageURL(for: pin.userId) { result in
+                if case .success(let url) = result {
+                    profileImageURL = url
+                }
+            }
+        }
+    }
+}
