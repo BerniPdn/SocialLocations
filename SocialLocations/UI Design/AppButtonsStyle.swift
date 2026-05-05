@@ -63,6 +63,17 @@ struct FriendDestructiveButtonStyle: ButtonStyle {
     }
 }
 
+struct DeleteFriendOptionButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 16, weight: .bold, design: .rounded))
+            .foregroundStyle(.white)
+            .frame(width: 150, height: 35)
+            .background(Color.appRed.opacity(configuration.isPressed ? 0.4 : 0.8))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
 struct FriendOptionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

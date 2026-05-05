@@ -93,7 +93,7 @@ struct FriendsView: View {
             } label : {
                 Label ("Delete Friend", systemImage: "person.slash")
             }
-            .buttonStyle(FriendOptionButtonStyle())
+            .buttonStyle(DeleteFriendOptionButtonStyle())
         }
     }
     
