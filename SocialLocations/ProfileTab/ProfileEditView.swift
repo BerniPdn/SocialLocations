@@ -24,7 +24,8 @@ struct ProfileEditView: View {
         NavigationStack{
             ZStack{
                 AppBackground()
-                VStack(spacing: 20) {
+                
+                VStack(spacing: 15) {
                     PhotosPicker(selection: $selectedItem, matching: .images) {
                           if let uiImage = selectedUIImage {
                              Image(uiImage: uiImage)
@@ -41,19 +42,17 @@ struct ProfileEditView: View {
                               } placeholder: {
                                    ProgressView()
                               }
-                              .frame(width: 120, height: 120)
+                              .frame(width: 200, height: 200)
                               .clipShape(Circle())
                        } else {
                           Image(systemName: "person.crop.circle.fill")
                               .resizable()
-                              .frame(width: 120, height: 120)
+                              .frame(width: 200, height: 200)
                               .foregroundColor(.gray)
                       }
             }
                     
                     TextField("Username", text: $username)
-                        .sheetTextFieldStyle()
-                    TextField("Phone Number", text: $phoneNumber)
                         .sheetTextFieldStyle()
                     
                     if !errorMessage.isEmpty {
@@ -73,7 +72,6 @@ struct ProfileEditView: View {
                     }
                     
                     .buttonStyle(PrimaryButtonStyle())
-                    .frame(maxWidth: .infinity)
                     .disabled(isUploading)
                 }
                 .navigationTitle("Edit Profile")
@@ -91,7 +89,9 @@ struct ProfileEditView: View {
                     }
                     
                 }
+                .dynamicTypeSize(.xxLarge)
                 .padding(.horizontal, 24)
+                .padding(.vertical, 15)
             }
         }
     }

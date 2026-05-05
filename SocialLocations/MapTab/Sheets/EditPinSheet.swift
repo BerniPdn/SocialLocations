@@ -92,28 +92,23 @@ struct EditPinView: View {
                         TextField("Comment", text: $pin.comment, axis: .vertical)
                             .lineLimit(3...5)
                             .sheetTextFieldStyle()
-                            .toolbar {  //temporary solution for dismissing keyboard
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                }
-                            }
-                            .onChange(of: pin.comment) { _, new in
-                                if new.count > 150 { pin.comment = String(new.prefix(150)) }
-                            }
                     }
-                    
-                    Button(action: {
-                        model.updatePin(pin: pin)
-                        dismiss()
-                    }) {
-                        Text("Save Changes")
+                    .onChange(of: pin.comment) { _, new in
+                        if new.count > 150 { pin.comment = String(new.prefix(150)) }
                     }
-                    .buttonStyle(PrimaryButtonStyle())
                 }
-                .dynamicTypeSize(.xxLarge)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 15)
+                
+                Button(action: {
+                    model.updatePin(pin: pin)
+                    dismiss()
+                }) {
+                    Text("Save Changes")
+                }
+                .buttonStyle(PrimaryButtonStyle())
             }
+            .dynamicTypeSize(.xxLarge)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 15)
         }
     }
 }
