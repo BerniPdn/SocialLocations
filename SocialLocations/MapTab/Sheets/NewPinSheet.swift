@@ -24,10 +24,10 @@ struct NewPinSheet: View {
     @State private var category: PinCategory = .other
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AppBackground()
-                
+        ZStack {
+            AppBackground()
+            
+            ScrollView{
                 VStack(alignment: .leading, spacing: 35) {
                     // HEADING
                     Text("Add a Pin!")
@@ -85,7 +85,7 @@ struct NewPinSheet: View {
                         VStack(alignment: .leading, spacing: 8){
                             Label("CATEGORY", systemImage: "tag.fill")
                                 .sheetSubtitleStyle()
-                        
+                            
                             Picker("Category", selection: $category) {
                                 ForEach(PinCategory.allCases, id: \.self) { cat in
                                     Text(cat.rawValue).tag(cat)
@@ -130,7 +130,6 @@ struct NewPinSheet: View {
                 .dynamicTypeSize(.xxLarge)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 15)
-                
             }
         }
     }
