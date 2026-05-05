@@ -10,6 +10,8 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var isEditShowing = false
+    @State private var showProfileTutorial = false
+    @AppStorage("hasSeenProfileTutorial") private var hasSeenProfileTutorial = false 
     
     var body: some View {
         NavigationStack {
@@ -61,7 +63,21 @@ struct ProfileView: View {
                     Spacer()
                 }
                 .navigationTitle("Your Profile")
+                if showProfileTutorial { 
+                    TutorialOverlay(
+                        message: "Edit your profile or log out here.",
+                        onDismiss: {
+                            withAnimation { showProfileTutorial = false }
+                        }
+                    )
+                }
             }
+        }
+        .task {
+            guard !hasSeenProfileTutorial else { return }
+            try? await Task.sleep(nanoseconds: 800_000_000)
+            hasSeenProfileTutorial = true
+            withAnimation { showProfileTutorial = true }
         }
         .sheet(isPresented: $isEditShowing) {
             ProfileEditView()

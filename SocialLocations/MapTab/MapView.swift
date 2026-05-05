@@ -7,12 +7,9 @@
 
 import SwiftUI
 import MapKit
-//extension UUID: @retroactive Identifiable {
-//    public var id: UUID { self }
-//}
 
 struct MapView: View {
-
+    
     var friendUserId: String? = nil //optional friends filter
     var friendUsername: String? = nil
     
@@ -20,9 +17,10 @@ struct MapView: View {
     @StateObject private var pinsModel = PinsViewModel()
     @State private var pendingPinID: String?
     @State private var selectedPinID: String?
-//    @State private var isSearchActive: Bool = false
     @FocusState private var isSearchFieldFocused: Bool
     @StateObject private var friendsViewModel = FriendsViewModel()
+    @AppStorage("hasSeenMapTutorial") private var hasSeenMapTutorial = false
+    @State private var showMapTutorial = false
     
     
     @State private var position = MapCameraPosition.region(
@@ -46,109 +44,110 @@ struct MapView: View {
             }
     }
     
-//    @ViewBuilder
-//    private func fixedAnnotation(for location: some Identifiable) -> some View {
-//        Image(location.imageName)
-//            .resizable()
-//            .frame(width: location.width, height: location.height)
-//    }
     
     var body: some View {
-        MapReader { proxy in
-            Map(position: $position) {
-//                ForEach(FixedLocations.all, id: \.name) { location in
-//                    Annotation(location.name, coordinate: location.coordinate) {
-//                        fixedAnnotation(for: location)
-//                    }
-//                }
-                ForEach(FixedLocations.all, id: \.name) { location in
-                    Annotation(location.name, coordinate: location.coordinate) {
-                        Image(location.imageName)
-                            .resizable()
-                            .frame(width: location.width, height: location.height)
+        ZStack {
+            MapReader { proxy in
+                Map(position: $position) {
+                    ForEach(FixedLocations.all, id: \.name) { location in
+                        Annotation(location.name, coordinate: location.coordinate) {
+                            Image(location.imageName)
+                                .resizable()
+                                .frame(width: location.width, height: location.height)
+                        }
+                    }
+                    
+                    ForEach(pinsModel.pins) { pin in
+                        Annotation(pin.name, coordinate: pin.coordinate) {
+                            pinAnnotation(for: pin)
+                        }
                     }
                 }
                 
-                ForEach(pinsModel.pins) { pin in
-                    Annotation(pin.name, coordinate: pin.coordinate) {
-                        pinAnnotation(for: pin)
-                    }
+                .mapStyle(.standard())
+                .overlay(alignment: .top) {
+                    SearchOverlay(
+                        query: $searchModel.query,
+                        autoCompleteResults: searchModel.autoCompleteResults,
+                        mapItems: searchModel.mapItems,
+                        onSelectAutocomplete: { searchModel.search(for: $0) },
+                        onSelectMapItem: { searchModel.select(item: $0) },
+                        onClear: { isSearchFieldFocused = false }
+                    )
                 }
-            }
-            
-            .mapStyle(.standard())
-            .overlay(alignment: .top) {
-                SearchOverlay(
-                    query: $searchModel.query,
-                    autoCompleteResults: searchModel.autoCompleteResults,
-                    mapItems: searchModel.mapItems,
-                    onSelectAutocomplete: { searchModel.search(for: $0) },
-                    onSelectMapItem: { searchModel.select(item: $0) },
-                    onClear: { isSearchFieldFocused = false }
-                )
-            }
-
-            .gesture(
-                LongPressGesture(minimumDuration: 0.5)
-                    .simultaneously(with: DragGesture(minimumDistance: 0))
-                    .onEnded { value in
-                        if let dragValue = value.second,
-                           let coordinate = proxy.convert(dragValue.startLocation, from: .local) {
-                            let tempID = UUID().uuidString
-                            pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
-                            pendingPinID = tempID
+                
+                .gesture(
+                    LongPressGesture(minimumDuration: 0.5)
+                        .simultaneously(with: DragGesture(minimumDistance: 0))
+                        .onEnded { value in
+                            if let dragValue = value.second,
+                               let coordinate = proxy.convert(dragValue.startLocation, from: .local) {
+                                let tempID = UUID().uuidString
+                                pinsModel.addLocalPin( coordinate: coordinate, id: tempID)
+                                pendingPinID = tempID
+                            }
                         }
-                    }
-            )
-
-            .onChange(of: searchModel.selectedItem) {_, newItem in
-                guard let newItem else { return }
-                let coordinate = newItem.location.coordinate
-                let tempID = UUID().uuidString
-                pinsModel.addLocalPin(coordinate: coordinate, id: tempID)
-                pendingPinID = tempID
-//                isSearchActive = false
-                isSearchFieldFocused = false
-            }
-            .onAppear { //filtering friends functionality
-                pinsModel.listenToPins(friendIDs: friendsViewModel.friends.compactMap { $0.id })
-            }
-            .onChange(of: friendsViewModel.friends) { _, newFriends in
-                pinsModel.listenToPins(friendIDs: newFriends.compactMap { $0.id })
-            }
-            
-//            .sheet(isPresented: $isSearchActive) {
-//                SearchSheet()
-//                    .environment(searchModel)
-//            }
-            .sheet(isPresented: Binding(
-                get: { pendingPinID != nil },
-                set: { if !$0 {
-                    if let id = pendingPinID {
-                        pinsModel.removeLocalPin(id: id)
-                    }
-                    pendingPinID = nil
-                }}
-            )) {
-                if let id = pendingPinID {
-                    NewPinSheet(pinID: id, onDismiss: {
+                )
+                
+                .onChange(of: searchModel.selectedItem) {_, newItem in
+                    guard let newItem else { return }
+                    let coordinate = newItem.location.coordinate
+                    let tempID = UUID().uuidString
+                    pinsModel.addLocalPin(coordinate: coordinate, id: tempID)
+                    pendingPinID = tempID
+                    isSearchFieldFocused = false
+                }
+                .onAppear { //filtering friends
+                    //hasSeenMapTutorial = false // remove after testing
+                    pinsModel.listenToPins(friendIDs: friendsViewModel.friends.compactMap { $0.id })
+                }
+                .task {
+                    guard !hasSeenMapTutorial else { return }
+                    try? await Task.sleep(nanoseconds: 800_000_000)
+                    hasSeenMapTutorial = true
+                    withAnimation { showMapTutorial = true }
+                }
+                .onChange(of: friendsViewModel.friends) { _, newFriends in
+                    pinsModel.listenToPins(friendIDs: newFriends.compactMap { $0.id })
+                }
+                
+                .sheet(isPresented: Binding(
+                    get: { pendingPinID != nil },
+                    set: { if !$0 {
+                        if let id = pendingPinID {
+                            pinsModel.removeLocalPin(id: id)
+                        }
                         pendingPinID = nil
-                    })
-                    .environmentObject(pinsModel)
+                    }}
+                )) {
+                    if let id = pendingPinID {
+                        NewPinSheet(pinID: id, onDismiss: {
+                            pendingPinID = nil
+                        })
+                        .environmentObject(pinsModel)
+                    }
+                }
+                .sheet(isPresented: Binding(
+                    get: { selectedPinID != nil },
+                    set: { if !$0 { selectedPinID = nil } }
+                )) {
+                    if let id = selectedPinID {
+                        InformationPinSheet(pinID: id, onDismiss: {
+                            selectedPinID = nil
+                        })
+                        .environmentObject(pinsModel)
+                        .presentationDetents([.large])
+                        .presentationDragIndicator(.visible)
+                    }
                 }
             }
-            .sheet(isPresented: Binding(
-                get: { selectedPinID != nil },
-                set: { if !$0 { selectedPinID = nil } }
-            )) {
-                if let id = selectedPinID {
-                    InformationPinSheet(pinID: id, onDismiss: {
-                        selectedPinID = nil
-                    })
-                    .environmentObject(pinsModel)
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
-                }
+            if showMapTutorial {
+                TutorialOverlay(
+                    message: "Double tap to add a pin",
+                    onDismiss: {
+                        withAnimation { showMapTutorial = false }
+                    }
+                )
             }
         }
     }
@@ -235,6 +234,3 @@ private struct SearchOverlay: View {
     }
 }
 
-//#Preview {
-//    MapView()
-//}
