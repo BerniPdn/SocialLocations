@@ -156,10 +156,10 @@ struct MapView: View {
                             }
                         }
                     }
-            }
-        }
-    }
-}
+//            }
+//        }
+//    }
+//}
 
 private struct SearchOverlay: View {
     @Binding var query: String
