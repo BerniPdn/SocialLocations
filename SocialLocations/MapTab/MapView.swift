@@ -184,6 +184,10 @@ private struct SearchOverlay: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.brown, lineWidth: 3)
+            )
             
             if showingResults {
                 ScrollView {
