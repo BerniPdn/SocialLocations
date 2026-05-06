@@ -11,7 +11,7 @@ struct EditPinView: View {
     @EnvironmentObject var model: PinsViewModel
     @Environment(\.dismiss) var dismiss
     
-    @State var pin: Pin
+    @State var pin: Pin // Local copy of pin
     
     var body: some View {
         ZStack {
@@ -19,11 +19,10 @@ struct EditPinView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 35) {
                     
-                    // HEADING
                     Text("Edit Your Pin")
                         .sheetTitleStyle()
                     
-                    //Display Location - you can't edit this
+                    // Address - read only
                     VStack(alignment: .leading, spacing: 8) {
                         Label("LOCATION", systemImage: "mappin.and.ellipse")
                             .sheetSubtitleStyle()
@@ -41,7 +40,7 @@ struct EditPinView: View {
                         .sheetTextFieldStyle()
                     }
                     
-                    //NAME SECTION
+                    // Name
                     VStack(alignment: .leading, spacing: 8) {
                         Label("NAME", systemImage: "signpost.right")
                             .sheetSubtitleStyle()
@@ -53,8 +52,9 @@ struct EditPinView: View {
                             .sheetTextFieldStyle()
                     }
                     
-                    //RATING AND COMMENTING SECTION
                     HStack (spacing: 20) {
+                        
+                        // Rating
                         VStack(alignment: .leading, spacing: 8){
                             Label("RATING", systemImage: "star.leadinghalf.fill")
                                 .sheetSubtitleStyle()
@@ -72,6 +72,7 @@ struct EditPinView: View {
                             .sheetRatingTextFieldStyle()
                         }
                         
+                        // Category
                         VStack(alignment: .leading, spacing: 8){
                             Label("CATEGORY", systemImage: "tag.fill")
                                 .sheetSubtitleStyle()
@@ -85,6 +86,7 @@ struct EditPinView: View {
                         }
                     }
                     
+                    // Comment
                     VStack(alignment: .leading, spacing: 8) {
                         Label("COMMENT", systemImage: "message.fill")
                             .sheetSubtitleStyle()

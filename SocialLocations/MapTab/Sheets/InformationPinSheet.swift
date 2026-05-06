@@ -25,12 +25,12 @@ struct InformationPinSheet: View {
             AppBackground()
             
             VStack(alignment: .leading, spacing: 29) {
-                // HEADING
+                
                 Text(pin?.name.isEmpty == false ? pin!.name : "Unknown Place")
                     .sheetTitleStyle()
                 
                 
-                //CREATOR'S USERNAME
+                // Pin's creator username
                 VStack(alignment: .leading, spacing: 8) {
                     Label("PINPAL USERNAME", systemImage: "person.fill")
                         .sheetSubtitleStyle()
@@ -48,7 +48,7 @@ struct InformationPinSheet: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                //ADDRESS SECTION
+                // Address
                 VStack(alignment: .leading, spacing: 8) {
                     Label("LOCATION", systemImage: "mappin.and.ellipse")
                         .sheetSubtitleStyle()
@@ -67,7 +67,7 @@ struct InformationPinSheet: View {
                 }
                 
                 
-                //RATING AND CATEGORY SECTION
+                // Rating
                 VStack(alignment: .leading, spacing: 8){
                     Label("RATING", systemImage: "star.leadinghalf.filled")
                         .sheetSubtitleStyle()
@@ -80,7 +80,7 @@ struct InformationPinSheet: View {
                     }
                 }
                 
-                
+                // Category
                 VStack(alignment: .leading, spacing: 8){
                     Label("CATEGORY", systemImage: "tag.fill")
                         .sheetSubtitleStyle()
@@ -89,7 +89,7 @@ struct InformationPinSheet: View {
                         .sheetCapsuleStyle()
                 }
                 
-                //COMMENT SECTION
+                // Comment
                 VStack(alignment: .leading, spacing: 8) {
                     Label("COMMENT", systemImage: "message.fill")
                         .sheetSubtitleStyle()
@@ -98,8 +98,7 @@ struct InformationPinSheet: View {
                         .sheetTextStyle()
                 }
                 
-                
-                //BUTTONS
+                // Buttons
                 HStack (spacing: 40){
                     if pin?.userId == Auth.auth().currentUser?.uid {
                         Button(action: {
