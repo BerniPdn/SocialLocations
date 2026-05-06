@@ -64,7 +64,7 @@ struct MapView: View {
                         query: $searchModel.query,
                         autoCompleteResults: searchModel.autoCompleteResults,
                         mapItems: searchModel.mapItems,
-                        onSelectAutocomplete: { searchModel.search(for: $0) },
+                        onSelectAutocomplete: { searchModel.searchAndSelect(for: $0) },
                         onSelectMapItem: { searchModel.select(item: $0) },
                         onClear: { isSearchFieldFocused = false }
                     )

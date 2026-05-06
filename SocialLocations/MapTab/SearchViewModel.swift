@@ -78,4 +78,20 @@ class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
         mapItems = []
     }
     
+    func searchAndSelect(for query: String) {
+        let searchRequest = MKLocalSearch.Request()
+        searchRequest.naturalLanguageQuery = query
+        if let region {
+            searchRequest.region = region
+        }
+        
+        let search = MKLocalSearch(request: searchRequest)
+        search.start { response, error in
+            guard let firstItem = response?.mapItems.first else { return }
+            Task { @MainActor in
+                self.select(item: firstItem)
+            }
+        }
+    }
+    
 }
