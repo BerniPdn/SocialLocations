@@ -13,7 +13,9 @@ import FirebaseAuth
 class StorageManager {
     static let shared = StorageManager()
     private init() {}
-
+    
+    // overwrites the previous photo
+    // uid is used as the filename so only one copy is kept per user
     func uploadProfileImage(_ imageData: Data, completion: @escaping (Result<String, Error>) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
 

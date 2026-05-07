@@ -5,10 +5,10 @@
 //  Created by Irene Gallini on 4/6/26.
 //
 
-//123
 import Foundation
 import FirebaseFirestore
 
+// status flows: "pending" → "accepted" or "rejected"
 struct FriendRequest: Identifiable, Codable {
     @DocumentID var id: String?
     let fromUserId: String
