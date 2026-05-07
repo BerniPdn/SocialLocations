@@ -86,7 +86,6 @@ class PinsViewModel: ObservableObject {
                         }
                         
                         // Fetch username for each pin asynchronously and patch it in once resolved
-
                         let pinsWithUsernames = newPins
                         for i in pinsWithUsernames.indices {
                             let userId = pinsWithUsernames[i].userId
@@ -166,7 +165,7 @@ class PinsViewModel: ObservableObject {
                 }
             }
     }
-    // Persists only editable fields — coordinate and userId are immutable after creation
+    // Persists only editable fields, coordinate and userId are immutable after creation
     func updatePin(pin: Pin) {
         Firestore.firestore()
             .collection("pins")

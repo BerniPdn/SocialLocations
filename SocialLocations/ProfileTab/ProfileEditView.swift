@@ -27,30 +27,30 @@ struct ProfileEditView: View {
                 
                 VStack(spacing: 15) {
                     PhotosPicker(selection: $selectedItem, matching: .images) {
-                          if let uiImage = selectedUIImage {
-                             Image(uiImage: uiImage)
-                                  .resizable()
-                                  .scaledToFill()
-                                  .frame(width: 120, height: 120)
-                                  .clipShape(Circle())
+                        if let uiImage = selectedUIImage {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 120, height: 120)
+                                .clipShape(Circle())
                         } else if let urlString = authViewModel.appUser?.profileImageURL,
-                                    !urlString.isEmpty,
-                                    let url = URL(string: urlString) {
-                          // Show existing saved photo while no new one is picked
-                              AsyncImage(url: url) { image in
-                                   image.resizable().scaledToFill()
-                              } placeholder: {
-                                   ProgressView()
-                              }
-                              .frame(width: 200, height: 200)
-                              .clipShape(Circle())
-                       } else {
-                          Image(systemName: "person.crop.circle.fill")
-                              .resizable()
-                              .frame(width: 200, height: 200)
-                              .foregroundColor(.gray)
-                      }
-            }
+                                  !urlString.isEmpty,
+                                  let url = URL(string: urlString) {
+                            // Show existing saved photo while no new one is picked
+                            AsyncImage(url: url) { image in
+                                image.resizable().scaledToFill()
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(width: 200, height: 200)
+                            .clipShape(Circle())
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .frame(width: 200, height: 200)
+                                .foregroundColor(.gray)
+                        }
+                    }
                     
                     TextField("Username", text: $username)
                         .sheetTextFieldStyle()
@@ -60,7 +60,7 @@ struct ProfileEditView: View {
                             .foregroundColor(.red)
                             .font(.caption)
                     }
-
+                    
                     Button {
                         saveProfile()
                     } label: {
@@ -97,47 +97,47 @@ struct ProfileEditView: View {
     }
     
     private func saveProfile() {
-            isUploading = true
-            errorMessage = ""
+        isUploading = true
+        errorMessage = ""
         
-
-    // If a new image was picked, upload it first
-            if let uiImage = selectedUIImage,
-                   let imageData = uiImage.jpegData(compressionQuality: 0.7) {
-
-                    StorageManager.shared.uploadProfileImage(imageData) { result in
-                        DispatchQueue.main.async {
-                            switch result {
-                            case .success(let url):
-                                authViewModel.updateProfile(
-                                    username: username,
-                                    phoneNumber: phoneNumber,
-                                    profileImageURL: url        // pass the new URL
-                                ) { success in
-                                    isUploading = false
-                                    if success { dismiss() }
-                                    else { errorMessage = authViewModel.errorMessage }
-                                }
-                            case .failure(let error):
-                                isUploading = false
-                                errorMessage = error.localizedDescription
-                            }
+        
+        // If a new image was picked, upload it first
+        if let uiImage = selectedUIImage,
+           let imageData = uiImage.jpegData(compressionQuality: 0.7) {
+            
+            StorageManager.shared.uploadProfileImage(imageData) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let url):
+                        authViewModel.updateProfile(
+                            username: username,
+                            phoneNumber: phoneNumber,
+                            profileImageURL: url        // pass the new URL
+                        ) { success in
+                            isUploading = false
+                            if success { dismiss() }
+                            else { errorMessage = authViewModel.errorMessage }
                         }
-                    }
-
-                } else {
-                    // No new image — just save username/phone, keep existing URL
-                    authViewModel.updateProfile(
-                        username: username,
-                        phoneNumber: phoneNumber,
-                        profileImageURL: authViewModel.appUser?.profileImageURL ?? ""
-                    ) { success in
+                    case .failure(let error):
                         isUploading = false
-                        if success { dismiss() }
-                        else { errorMessage = authViewModel.errorMessage }
+                        errorMessage = error.localizedDescription
                     }
                 }
             }
+            
+        } else {
+            // No new image. Just save username/phone, keep existing URL
+            authViewModel.updateProfile(
+                username: username,
+                phoneNumber: phoneNumber,
+                profileImageURL: authViewModel.appUser?.profileImageURL ?? ""
+            ) { success in
+                isUploading = false
+                if success { dismiss() }
+                else { errorMessage = authViewModel.errorMessage }
+            }
+        }
+    }
 }
 
 

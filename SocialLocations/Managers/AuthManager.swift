@@ -15,7 +15,6 @@ class AuthManager {
     
     private init() {}
     
-    // MARK: - Sign Up
     func signUp(
         email: String,
         password: String,
@@ -42,6 +41,7 @@ class AuthManager {
             )
             
             do {
+                // any field added to AppUser later needs a default or old accounts will fail to decode
                 try self.db.collection("users").document(user.uid).setData(from: appUser) { error in
                     if let error = error {
                         completion(.failure(error))
@@ -55,7 +55,7 @@ class AuthManager {
         }
     }
     
-    // MARK: - Sign In
+
     func signIn(email: String, password: String, completion: @escaping (Result<User, Error>) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
@@ -66,7 +66,7 @@ class AuthManager {
         }
     }
     
-    // MARK: - Fetch Firestore User
+
     func fetchCurrentAppUser(completion: @escaping (Result<AppUser, Error>) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
@@ -87,7 +87,6 @@ class AuthManager {
         }
     }
     
-    // MARK: - Sign Out
     func signOut() throws {
         try Auth.auth().signOut()
     }

@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-// Color Palette for App
+// Color Palette
 extension Color {
     static let backgroundMain = Color(red: 0.96, green: 0.94, blue: 0.88)
     static let backgroundSecondary = Color(red: 0.91, green: 0.88, blue: 0.80)

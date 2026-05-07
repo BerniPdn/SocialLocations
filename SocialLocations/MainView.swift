@@ -16,12 +16,12 @@ struct MainView: View {
                     Label("Map", systemImage: "map")
                 }
             
-            FriendsView() // Replaces Text("Here you can see your friends")
+            FriendsView() 
                             .tabItem {
                                 Label("Friends", systemImage: "globe")
                             }
             
-            ProfileView() // Replaces Text("Here you can see your profile")
+            ProfileView()
                             .tabItem {
                                 Label("Your Profile", systemImage: "person")
                             }

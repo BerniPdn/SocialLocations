@@ -11,8 +11,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import Combine
 
-/// Data used by FriendsView.
-///
+
 @MainActor
 class FriendsViewModel: ObservableObject {
     @Published var friends: [AppUser] = []
