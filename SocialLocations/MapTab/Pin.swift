@@ -7,28 +7,29 @@
 
 import SwiftUI
 import MapKit
-//internal import Combine
 
+// Categories a pin can be tagged with
 enum PinCategory: String, CaseIterable, Identifiable {
-    case food = "Food"
-    case nightlife = "Nightlife"
-    case nature = "Nature"
-    case shopping = "Shopping"
     case culture = "Culture"
     case education = "Education"
+    case food = "Food"
+    case nature = "Nature"
+    case nightlife = "Nightlife"
+    case shopping = "Shopping"
     case other = "Other"
     
     var id: String { rawValue }
 }
 
+// Represents a saved location in the map
 struct Pin: Identifiable{
     let id: String
     let coordinate: CLLocationCoordinate2D
     var name: String
-    var address: String?
+    var address: String? // Optional in case address can't be found
     var comment: String
     var rating: Int
     var category: PinCategory = .other
-    var userId: String
-    var username: String?
+    var userId: String // ID for the person who created the pin
+    var username: String? // Cached for display without extra Firestore lookup
 }

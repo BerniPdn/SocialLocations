@@ -18,23 +18,17 @@ class PinsViewModel: ObservableObject {
     var currentUserId: String {
         Auth.auth().currentUser?.uid ?? ""
     }
-    
     @Published var friendIds: [String] = []
     @Published var selectedUserIds: Set<String> = []
+
     
-    init() {
-        //listenToPins()
-    }
-    
-    // SAVE PIN → Firestore
+    // FIRESTORE
     func savePin(coordinate: CLLocationCoordinate2D,
                  name: String,
                  comment: String,
                  rating: Int,
                  category: PinCategory,
                  id: String) {
-        
-        //let userId = Auth.auth().currentUser?.uid ?? ""
         
         guard let uid = Auth.auth().currentUser?.uid else {
             print("No authenticated user")
@@ -52,36 +46,13 @@ class PinsViewModel: ObservableObject {
             userId: uid  // Connects to authenticated user
         )
     }
-    
-    // REALTIME LISTENER
-//    func listenToPins() {
-//        FirestoreManager.shared.listenToPins { documents in
-//            DispatchQueue.main.async {
-//                self.pins = documents.compactMap { doc in
-//                    guard let lat = doc["latitude"] as? Double,
-//                          let lon = doc["longitude"] as? Double,
-//                          let title = doc["title"] as? String
-//                    else { return nil }
-//                    let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
-//                    
-//                    return Pin(
-//                        id: doc.documentID,
-//                        coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
-//                        name: title,
-//                        address: existingAddress,
-//                        comment: doc["comment"] as? String ?? "",
-//                        rating: doc["rating"] as? Int ?? 0,
-//                        userId: doc["userId"] as? String ?? ""
-//                    )
-//                }
-//            }
-//        }
-//    }
+
+    // Listens to pins belonging to the current user and their friends
     func listenToPins(friendIDs: [String]) {
         let allowedIDs = Array(Set(friendIDs + [currentUserId])).filter { !$0.isEmpty }
         guard !allowedIDs.isEmpty else { return }
 
-        // Firestore 'in' queries allow max 30 items
+        // Split into chunks of 30 to respect Firestore's 'in' query limit
         let chunks = stride(from: 0, to: allowedIDs.count, by: 30).map {
             Array(allowedIDs[$0..<min($0 + 30, allowedIDs.count)])
         }
@@ -98,6 +69,8 @@ class PinsViewModel: ObservableObject {
                                   let lon = doc["longitude"] as? Double,
                                   let title = doc["title"] as? String
                             else { return nil }
+                            
+                            // Preserve any address already looked up locally to avoid redundant geocoding
                             let existingAddress = self.pins.first(where: { $0.id == doc.documentID })?.address
                             return Pin(
                                 id: doc.documentID,
@@ -111,8 +84,10 @@ class PinsViewModel: ObservableObject {
                                 username: nil
                             )
                         }
-                        // Getting username for each pin
-                        var pinsWithUsernames = newPins
+                        
+                        // Fetch username for each pin asynchronously and patch it in once resolved
+
+                        let pinsWithUsernames = newPins
                         for i in pinsWithUsernames.indices {
                             let userId = pinsWithUsernames[i].userId
                             FirestoreManager.shared.fetchUsername(for: userId) { result in
@@ -126,7 +101,7 @@ class PinsViewModel: ObservableObject {
                             }
                         }
                         
-                        // Merge, replacing any pins from this chunk
+                        // Replace existing pins from this chunk with the fresh snapshot
                         let chunkUserIDs = Set(chunk)
                         self.pins = self.pins.filter { !chunkUserIDs.contains($0.userId) || $0.userId.isEmpty }
                         self.pins += newPins
@@ -135,8 +110,8 @@ class PinsViewModel: ObservableObject {
         }
     }
     
-    
-    // LOOK UP ADDRESS
+    // GEOCODING
+    // Reverse geocodes a pin's coordinate and stores the human-readable address locally
     func lookupAddress(for id: String) async {
         guard let index = pins.firstIndex(where: { $0.id == id }) else { return }
         
@@ -159,6 +134,8 @@ class PinsViewModel: ObservableObject {
         }
     }
     
+    // LOCAL PIN MANAGEMENT
+    // Adds a temporary unsaved pin to the map while the user fills out the new pin sheet
     func addLocalPin(coordinate: CLLocationCoordinate2D, id: String) {
         pins.append(Pin(
             id: id,
@@ -189,7 +166,7 @@ class PinsViewModel: ObservableObject {
                 }
             }
     }
-    
+    // Persists only editable fields — coordinate and userId are immutable after creation
     func updatePin(pin: Pin) {
         Firestore.firestore()
             .collection("pins")
@@ -206,22 +183,6 @@ class PinsViewModel: ObservableObject {
                     print("Pin updated successfully")
                 }
             }
-    }
-    
-    // FUNCTIONS TO FILTER PINS
-//    func listenToFriends() {
-//        FirestoreManager.shared.listenToFriends { friendIds in
-//            DispatchQueue.main.async {
-//                self.friendIds = friendIds
-//            }
-//        }
-//    }
-    
-    var filteredPins: [Pin] {
-        if selectedUserIds.isEmpty {
-            return pins
-        }
-        return pins.filter { selectedUserIds.contains($0.userId) }
     }
 }
 

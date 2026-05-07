@@ -9,19 +9,19 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
-    
-    var friendUserId: String? = nil
-    var friendUsername: String? = nil
-    
-    @State private var searchModel = SearchViewModel()
+    //
     @StateObject private var pinsModel = PinsViewModel()
-    @State private var pendingPinID: String?
-    @State private var selectedPinID: String?
-    @FocusState private var isSearchFieldFocused: Bool
     @StateObject private var friendsViewModel = FriendsViewModel()
+    @State private var searchModel = SearchViewModel()
+    @State private var pendingPinID: String? // ID of a pin being created before it is saved
+    @State private var selectedPinID: String? // ID of a tapped pin - tiggers info sheet
+    @FocusState private var isSearchFieldFocused: Bool
     @AppStorage("hasSeenMapTutorial") private var hasSeenMapTutorial = false
     @State private var showMapTutorial = false
-    
+    @State private var isSheetPresented: Bool = true
+    @State private var savedCoordinate: CLLocationCoordinate2D? = nil
+   
+    // Initial camera position centered at Macalester College
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(
             center: FixedLocations.all[0].coordinate,
@@ -29,21 +29,12 @@ struct MapView: View {
         )
     )
     
-    @State private var isSheetPresented: Bool = true
-    @State private var savedCoordinate: CLLocationCoordinate2D? = nil
-    
-    @ViewBuilder
-    private func pinAnnotation(for pin: Pin) -> some View {
-        PinAnnotationView(pin: pin)
-            .onTapGesture {
-                selectedPinID = pin.id
-            }
-    }
-    
     var body: some View {
         ZStack {
             MapReader { proxy in
                 Map(position: $position) {
+                    
+                    // Landmark annotations
                     ForEach(FixedLocations.all, id: \.name) { location in
                         Annotation(location.name, coordinate: location.coordinate) {
                             Image(location.imageName)
@@ -52,9 +43,13 @@ struct MapView: View {
                         }
                     }
                     
+                    // User and friend pins from Firestore
                     ForEach(pinsModel.pins) { pin in
                         Annotation(pin.name, coordinate: pin.coordinate) {
-                            pinAnnotation(for: pin)
+                            PinAnnotationView(pin: pin)
+                                .onTapGesture {
+                                    selectedPinID = pin.id
+                                }
                         }
                     }
                 }
@@ -69,6 +64,7 @@ struct MapView: View {
                         onClear: { isSearchFieldFocused = false }
                     )
                 }
+                // Long press gesture to drop a Pin
                 .gesture(
                     LongPressGesture(minimumDuration: 0.5)
                         .simultaneously(with: DragGesture(minimumDistance: 0))
@@ -81,6 +77,7 @@ struct MapView: View {
                             }
                         }
                 )
+                // Drop a Pin when the user selects a search result
                 .onChange(of: searchModel.selectedItem) { _, newItem in
                     guard let newItem else { return }
                     let coordinate = newItem.location.coordinate
@@ -89,18 +86,22 @@ struct MapView: View {
                     pendingPinID = tempID
                     isSearchFieldFocused = false
                 }
+                // Start listening to pins for the current user and their friends
                 .onAppear {
                     pinsModel.listenToPins(friendIDs: friendsViewModel.friends.compactMap { $0.id })
                 }
+                // Trigger the tutorial on first launch
                 .task {
                     guard !hasSeenMapTutorial else { return }
                     try? await Task.sleep(nanoseconds: 800_000_000)
                     hasSeenMapTutorial = true
                     withAnimation { showMapTutorial = true }
                 }
+                // Change pins in map if Friends change
                 .onChange(of: friendsViewModel.friends) { _, newFriends in
                     pinsModel.listenToPins(friendIDs: newFriends.compactMap { $0.id })
                 }
+                // Open sheet for saving new pin
                 .sheet(isPresented: Binding(
                     get: { pendingPinID != nil },
                     set: { if !$0 {
@@ -114,6 +115,7 @@ struct MapView: View {
                         NewPinSheet(pinID: id, onDismiss: {
                             pendingPinID = nil
                         }, onSave: { coordinate in
+                            // Move the camera to the newly saved pin
                             withAnimation {
                                 position = .region(MKCoordinateRegion(
                                     center: coordinate,
@@ -124,6 +126,7 @@ struct MapView: View {
                         .environmentObject(pinsModel)
                     }
                 }
+                // Open information sheet when tapping a pin
                 .sheet(isPresented: Binding(
                     get: { selectedPinID != nil },
                     set: { if !$0 { selectedPinID = nil } }
@@ -138,6 +141,7 @@ struct MapView: View {
                     }
                 }
             }
+            // Show tutorial UI on first launch
             if showMapTutorial {
                 TutorialOverlay(
                     message: "Double tap to add a pin",
@@ -150,6 +154,7 @@ struct MapView: View {
     }
 }
 
+// Display Search bar and result list at the top of the screen
 private struct SearchOverlay: View {
     @Binding var query: String
     var autoCompleteResults: [SearchResult]
@@ -165,6 +170,7 @@ private struct SearchOverlay: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            // Search bar
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
@@ -189,10 +195,12 @@ private struct SearchOverlay: View {
                     .stroke(Color.brown, lineWidth: 3)
             )
             
+            // Dropdown results
             if showingResults {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
                         if mapItems.isEmpty {
+                            // Autocomplete suggestions
                             ForEach(autoCompleteResults) { result in
                                 Button { onSelectAutocomplete(result.title) } label: {
                                     VStack(alignment: .leading, spacing: 2) {
@@ -206,6 +214,7 @@ private struct SearchOverlay: View {
                                 Divider().padding(.leading, 12)
                             }
                         } else {
+                            // Full mao results
                             ForEach(mapItems) { result in
                                 Button {
                                     onSelectMapItem(result.mapItem)
@@ -235,6 +244,7 @@ private struct SearchOverlay: View {
     }
 }
 
+// Display the pin owner's profile photon the map
 private struct PinAnnotationView: View {
     let pin: Pin
     @State private var profileImageURL: String? = nil
@@ -252,6 +262,7 @@ private struct PinAnnotationView: View {
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
             } else {
+                // Fallback in case no profile pictire is set
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()
                     .frame(width: 40, height: 40)
@@ -259,6 +270,7 @@ private struct PinAnnotationView: View {
             }
         }
         .onAppear {
+            // Fetch the pin owner's profile image from Firestore
             FirestoreManager.shared.fetchProfileImageURL(for: pin.userId) { result in
                 if case .success(let url) = result {
                     profileImageURL = url

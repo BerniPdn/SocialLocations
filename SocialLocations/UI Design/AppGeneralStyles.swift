@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// LOG IN AND SIGN UP STYLES
+// Log in a Sign In styles
 struct LogSignTextFieldStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -21,7 +21,7 @@ struct LogSignTextFieldStyle: ViewModifier {
     }
 }
 
-// SHEET TEXT STYLES
+// Sheet text Styles
 struct SheetTitleStyle:  ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -47,7 +47,7 @@ struct SheetTextStyle: ViewModifier {
     }
 }
 
-// SHEET SECTIONS STYLES
+// Sheet's Sections Styles
 struct SheetTextFieldStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -117,9 +117,6 @@ extension View {
     func sheetStarStyle() -> some View { modifier(SheetStarStyle()) }
     func sheetCapsuleStyle() -> some View { modifier(SheetCapsuleStyle()) }
 }
-    
-
-// CARD SECTION STYLES
 
 
 

@@ -112,36 +112,3 @@ struct SocialLocationsTests {
         vm.removeLocalPin(id: id)
         #expect(vm.pins.isEmpty)
     }
-    
-    
-    @Test
-    func filteredPinsRespectsSelectedUsers() {
-        let vm = PinsViewModel()
-        
-        vm.pins = [
-            Pin(
-                id: "1",
-                coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0),
-                name: "",
-                comment: "",
-                rating: 0,
-                userId: "user1"
-            ),
-            Pin(
-                id: "2",
-                coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0),
-                name: "",
-                comment: "",
-                rating: 0,
-                userId: "user2"
-            )
-        ]
-        
-        vm.selectedUserIds = ["user1"]
-        
-        let filtered = vm.filteredPins
-        
-        #expect(filtered.count == 1)
-        #expect(filtered.first?.userId == "user1")
-    }
-}

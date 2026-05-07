@@ -30,11 +30,11 @@ struct NewPinSheet: View {
             
             ScrollView{
                 VStack(alignment: .leading, spacing: 35) {
-                    // HEADING
+                    
                     Text("Add a Pin!")
                         .sheetTitleStyle()
                     
-                    //ADDRESS SECTION
+                    // Address
                     VStack(alignment: .leading, spacing: 8) {
                         Label("LOCATION", systemImage: "mappin.and.ellipse")
                             .sheetSubtitleStyle()
@@ -52,7 +52,7 @@ struct NewPinSheet: View {
                         .sheetTextFieldStyle()
                     }
                     
-                    //NAME SECTION
+                    // Name
                     VStack(alignment: .leading, spacing: 8) {
                         Label("NAME", systemImage: "signpost.right")
                             .sheetSubtitleStyle()
@@ -63,8 +63,9 @@ struct NewPinSheet: View {
                                 if new.count > 50 { name = String(new.prefix(50)) }
                             }
                     }
-                    //RATING AND CATEGORY SECTIONS
+                
                     HStack (spacing: 20) {
+                        // Rating
                         VStack(alignment: .leading, spacing: 8){
                             Label("RATING", systemImage: "star.leadinghalf.fill")
                                 .sheetSubtitleStyle()
@@ -83,6 +84,8 @@ struct NewPinSheet: View {
                         }
                         
                         Spacer()
+                        
+                        // Category
                         VStack(alignment: .leading, spacing: 8){
                             Label("CATEGORY", systemImage: "tag.fill")
                                 .sheetSubtitleStyle()
@@ -96,7 +99,7 @@ struct NewPinSheet: View {
                         }
                     }
                     
-                    //COMMENT SECTION
+                    // Comment
                     VStack(alignment: .leading, spacing: 8) {
                         Label("COMMENT", systemImage: "message.fill")
                             .sheetSubtitleStyle()

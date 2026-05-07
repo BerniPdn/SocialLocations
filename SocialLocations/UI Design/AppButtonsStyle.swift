@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+
+// Buttons in Map and Profile Tab
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -41,6 +43,8 @@ struct DestructiveButtonStyle: ButtonStyle {
             .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
+
+// Buttons in FriendsTab
 struct FriendAcceptButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

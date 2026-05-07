@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// Create background for the whole app
 struct AppBackground: View {
     var body: some View {
         ZStack {

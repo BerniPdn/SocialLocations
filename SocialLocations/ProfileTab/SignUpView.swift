@@ -24,13 +24,8 @@ struct SignUpView: View {
                 
                 VStack(spacing: 10) {
                     Spacer()
-                    (
-                        Text("Create ")
-                            .foregroundStyle(Color.appGreen)
-                        
-                        + Text("Account")
-                            .foregroundStyle(Color.appBrown)
-                    )
+                    (Text("Create \(Text("Account").foregroundStyle(Color.appBrown))")
+                            .foregroundStyle(Color.appGreen))
                     .font(.system(size: 35, weight: .black))
                     
                     VStack(spacing: 14) {

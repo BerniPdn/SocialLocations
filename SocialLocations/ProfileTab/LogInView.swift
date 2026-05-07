@@ -23,12 +23,8 @@ struct LoginView: View {
                 VStack(spacing: 0) {
                     Spacer()
                     
-                    (
-                        Text("Pin")
-                            .foregroundStyle(Color.appGreen)
-                        + Text("Pals")
-                            .foregroundStyle(Color.appBrown)
-                    )
+                    (Text("Pin\(Text("Pals").foregroundStyle(Color.appBrown))")
+                            .foregroundStyle(Color.appGreen))
                     .font(.system(size: 64, weight: .black, design: .rounded))
                     
                     Text("Drop a pin, share a moment.")
