@@ -104,9 +104,7 @@ struct FriendsView: View {
     @ViewBuilder
     private func friendRow(_ user: AppUser) -> some View {
         HStack {
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 40, height: 40)
+            UserAvatarView(profileImageURL: user.profileImageURL)
             
             Text(user.username)
             
@@ -126,6 +124,7 @@ struct FriendsView: View {
     @ViewBuilder
     private func requestRow(_ request: FriendRequest, viewModel: FriendsViewModel) -> some View {
         HStack (spacing: 3){
+            UserAvatarView(profileImageURL: viewModel.requestUsers[request.fromUserId]?.profileImageURL)
             Text(viewModel.requestUsers[request.fromUserId]?.username ?? "Loading...")
             
             Spacer()
@@ -149,9 +148,7 @@ struct FriendsView: View {
     @ViewBuilder
     private func userRow(_ user: AppUser) -> some View {
         HStack {
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 40, height: 40)
+            UserAvatarView(profileImageURL: user.profileImageURL)
             
             VStack(alignment: .leading) {
                 Text(user.username)
@@ -187,6 +184,31 @@ struct FriendsView: View {
                     Label("Add Friend", systemImage: "plus")
                 }
                 .buttonStyle(FriendOptionButtonStyle())
+            }
+        }
+    }
+}
+
+private struct UserAvatarView: View {
+    let profileImageURL: String?
+    
+    var body: some View {
+        Group {
+            if let urlString = profileImageURL,
+               !urlString.isEmpty,
+               let url = URL(string: urlString) {
+                AsyncImage(url: url) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    ProgressView()
+                }
+                .frame(width: 40, height: 40)
+                .clipShape(Circle())
+            } else {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.gray)
             }
         }
     }
