@@ -81,8 +81,6 @@ struct FriendsView: View {
                 searchTask = Task {
                     try? await Task.sleep(nanoseconds: 300_000_000)
                     await viewModel.searchUsers(by: newValue)
-                    //                Task{
-                    //                await viewModel.searchUsers(by: newValue)
                 }
             }
             .navigationTitle("Friends")

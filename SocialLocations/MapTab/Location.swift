@@ -14,7 +14,8 @@ struct Location {
     let width: CGFloat
     let height: CGFloat
 }
-    
+
+// Created landmarks
 struct FixedLocations {
     static let all: [Location] = [
         Location(name: "Macalester College", coordinate: CLLocationCoordinate2D(latitude: 44.93803318265245, longitude: -93.16845358110233), imageName: "Macalester",  width: 50, height: 30),
