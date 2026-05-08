@@ -12,12 +12,12 @@ struct RootView: View {
 
     var body: some View {
         Group {
+            // authViewModel.user is nil until Firebase Auth confirms a session
             if authViewModel.user != nil {
                 MainView()
             } else {
                 LoginView()
             }
         }
-//       MainView()
     }
 }

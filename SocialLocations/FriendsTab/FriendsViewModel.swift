@@ -11,8 +11,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import Combine
 
-/// Data used by FriendsView.
-///
+
 @MainActor
 class FriendsViewModel: ObservableObject {
     @Published var friends: [AppUser] = []
@@ -26,7 +25,8 @@ class FriendsViewModel: ObservableObject {
     private let db = Firestore.firestore()
     private var requestsListener: ListenerRegistration?
     private var friendsListener: ListenerRegistration?
-
+    
+    // enableListeners: false is used in previews/tests to avoid firing live Firestore queries.
     init(enableListeners: Bool = true) {
         if enableListeners {
             listenForIncomingRequests()
@@ -60,7 +60,7 @@ class FriendsViewModel: ObservableObject {
                     }
                 }
         }
-    
+    // Tracks outgoing pending requests so the UI can show "Request Sent"
     func listenToSentRequests() {
         guard let userId = Auth.auth().currentUser?.uid else { return }
         
@@ -120,7 +120,7 @@ class FriendsViewModel: ObservableObject {
             }
     }
     
-    // Data fetching
+    // Firestore's 'in' operator caps at 10 items, so large friend lists are split into chunks.
     func fetchFriendsByIDs(_ ids: [String]) async {
             guard !ids.isEmpty else {
                 self.friends = []
@@ -132,6 +132,7 @@ class FriendsViewModel: ObservableObject {
                     Array(ids[$0..<min($0 + 10, ids.count)])
                 }
                 for chunk in chunks {
+                    // Range query on usernameLower enables prefix search (Firestore does not have LIKE operator)
                     let snapshot = try await db.collection("users")
                         .whereField(FieldPath.documentID(), in: chunk)
                         .getDocuments()

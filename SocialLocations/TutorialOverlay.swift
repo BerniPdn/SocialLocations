@@ -6,7 +6,7 @@
 //
 
 //  A simple first-visit tooltip overlay. Drop it into any ZStack and it
-//  floats at the bottom of the screen with a tap-to-dismiss behaviour.
+//  floats at the bottom of the screen.
 //  Persistence is handled by the caller via @AppStorage so each tab only
 //  shows its tutorial once per device install.
 //
@@ -54,11 +54,8 @@ struct TutorialOverlay: View {
             .padding(.bottom, 40)
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
-        // Dim the background slightly so the card pops
         .background(Color.black.opacity(0.25).ignoresSafeArea())
-        // Also allow tapping the dimmed area to dismiss
         .onTapGesture { onDismiss() }
-        // But don't let the card tap propagate upward
         .gesture(TapGesture().onEnded { })
     }
 }

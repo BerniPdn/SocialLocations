@@ -21,7 +21,9 @@ struct MapItemResult: Identifiable {
     var subtitle: String { mapItem.address?.fullAddress ?? ""}
 }
 
+
 @Observable
+// two-stage: completer gives autocomplete suggestions, MKLocalSearch resolves them to map items
 class SearchViewModel: NSObject, MKLocalSearchCompleterDelegate {
     private let completer = MKLocalSearchCompleter()
     var query: String = "" {

@@ -26,7 +26,7 @@ struct Pin: Identifiable{
     let id: String
     let coordinate: CLLocationCoordinate2D
     var name: String
-    var address: String? // Optional in case address can't be found
+    var address: String? // address is looked up locally via reverse geocoding and never stored in Firestore
     var comment: String
     var rating: Int
     var category: PinCategory = .other

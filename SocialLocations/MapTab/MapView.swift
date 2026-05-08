@@ -144,7 +144,7 @@ struct MapView: View {
             // Show tutorial UI on first launch
             if showMapTutorial {
                 TutorialOverlay(
-                    message: "Double tap to add a pin",
+                    message: "Long press then release to add a pin",
                     onDismiss: {
                         withAnimation { showMapTutorial = false }
                     }

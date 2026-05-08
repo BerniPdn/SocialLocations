@@ -24,7 +24,7 @@ struct LoginView: View {
                     Spacer()
                     
                     (Text("Pin\(Text("Pals").foregroundStyle(Color.appBrown))")
-                            .foregroundStyle(Color.appGreen))
+                        .foregroundStyle(Color.appGreen))
                     .font(.system(size: 64, weight: .black, design: .rounded))
                     
                     Text("Drop a pin, share a moment.")
@@ -108,9 +108,9 @@ struct LoginView: View {
                     .padding(22)
                     .background(Color.white.opacity(0.72))
                     .clipShape(RoundedRectangle(cornerRadius: 24))
-
+                    
                     Spacer()
-
+                    
                 }
                 .padding(.horizontal, 26)
             }
