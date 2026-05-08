@@ -197,10 +197,17 @@ private struct UserAvatarView: View {
             if let urlString = profileImageURL,
                !urlString.isEmpty,
                let url = URL(string: urlString) {
-                AsyncImage(url: url) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    ProgressView()
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill()
+                    case .failure, .empty:
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .foregroundColor(.gray)
+                    @unknown default:
+                        ProgressView()
+                    }
                 }
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
@@ -213,7 +220,6 @@ private struct UserAvatarView: View {
         }
     }
 }
-
 
 
 
